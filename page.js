@@ -8,7 +8,7 @@
             // 導入のコンセプト文章（<br>で改行できます）
             concept: `
                 <h2 style="font-family: 'Cinzel', serif; font-size: 2.5rem; margin: 0 0 1rem 0; letter-spacing: 0.1em;">Reitaku Campus</h2>
-                <h3 style="font-size: 1.1rem; margin: 0 0 2rem 0; font-weight: normal; color: #555;">360°でキャンパスツアーをしよう！</h3>
+                <h3 style="font-size: 1.1rem; margin: 0 0 2rem 0; font-weight: normal; color: #555;">360°でキャンパスツアーをしてみよう！</h3>
                 <p style="font-size: 1rem; line-height: 2.2; margin: 0; color: #555;">
                     麗澤大学のキャンパスは、豊かな緑に囲まれ落ち着いた環境と、<br>
                     学生の挑戦を支える充実した施設設備がたくさんあります。<br>
