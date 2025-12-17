@@ -272,4 +272,30 @@
                 // ドラッグ方向とスクロール方向は逆（左にドラッグすると右にスクロール）
                 slider.scrollLeft -= delta; 
             });
+
+            // タッチ操作イベント（スマホ対応）
+            slider.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                slider.classList.add('active');
+                lastPageX = e.touches[0].pageX;
+                velocity = 0;
+            }, { passive: false });
+
+            slider.addEventListener('touchend', () => {
+                isDragging = false;
+                slider.classList.remove('active');
+            });
+
+            slider.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                // スマホでのスワイプ操作と競合しないように preventDefault する
+                // ※縦スクロールもブロックされるため、操作感によっては調整が必要
+                e.preventDefault();
+                
+                const x = e.touches[0].pageX;
+                const delta = x - lastPageX;
+                lastPageX = x;
+                
+                slider.scrollLeft -= delta;
+            }, { passive: false });
         }
