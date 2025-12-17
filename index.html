@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <title>ReitakuCampus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=BBH+Bogle&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Shippori+Mincho:wght@400;500&family=BIZ+UDPGothic&display=swap" rel="stylesheet">
+    <script src="page.js"></script>
+
+    <style>
+        :root {
+            /* ★ここを変更: サイト全体の色設定 */
+            --text: #2c2c2c; /* 文字色 */
+            --bg: #f9f8f6;   /* 背景色 */
+            --gold: #bfa37e; /* アクセントカラー（金） */
+        }
+        body {
+            margin: 0; background: var(--bg); color: var(--text);
+            font-family: 'Shippori Mincho', 'Cinzel', serif;
+            overflow-x: hidden;
+        }
+
+        /* フェードイン */
+        .fade-in { opacity: 0; transform: translateY(20px); transition: 1.5s ease; }
+        .fade-in.active { opacity: 1; transform: translateY(0); }
+
+        /* ヘッダー */
+        header {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center;
+            color: #fff; mix-blend-mode: difference; /* 背景色に合わせて文字色を反転させる効果 */
+            box-sizing: border-box;
+        }
+        .logo { font-size: 1.8rem; letter-spacing: 0.2em; font-family: 'Cinzel', serif; }
+
+        /* ヒーロー（スライダー） */
+        .hero {
+            height: 90vh; /* ★ここを変更: 高さ (例: 80vh, 600px) */
+            width: 100%;   /* ★ここを変更: 幅 (例: 100%, 1200px) */
+            position: relative; overflow: hidden; background: #111;
+            margin: 0 auto; /* 幅を100%以外にした場合に中央寄せになります */
+        }
+        .slide {
+            position: absolute; inset: 0; background-size: cover; background-position: center;
+            opacity: 0; transform: scale(1.1); transition: transform 6s linear, opacity 2s ease;
+        }
+        .slide.active { opacity: 1; transform: scale(1); }
+        
+        .hero-txt {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; color: #fff; z-index: 10; width: 100%;
+        }
+        .h-title { 
+            font-size: 7rem; font-family: 'BBH Bogle', 'sans-serif'; margin: 0; letter-spacing: 0.2em; font-weight: 400; 
+            text-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            line-height: 1.2; 
+        }
+        .h-sub { font-size: 1rem; text-shadow: 0 5px 20px rgba(0,0,0,0.3); letter-spacing: 0.5em; display: block; }
+
+        /* コンテンツ */
+        .content { max-width: 1000px; margin: 0 auto; padding: 10rem 2rem 5rem; text-align: center; }
+        
+        /* コンセプトボックス */
+        .concept-box {
+            border: 1px solid #000;
+            padding: 3rem;        /* ★枠線と文字の間の余白（大きくすると枠が広がります） */
+            margin: 0 auto 5rem;
+            max-width: 800px;     /* ★枠の最大横幅（ここを600pxなどに変えると狭くなります） */
+            width: 50%;           /* スマホなどで画面端にくっつきすぎないようにする設定 */
+            position: relative;
+        }
+        .lead-p { font-size: 1.5rem; line-height: 2.5; margin: 0; color: #555; }
+        
+        /* モデル紹介（横スクロール） */
+        .room-sec { 
+            display: flex;
+            overflow-x: hidden; /* スクロールバーを隠す（JSで制御するため） */
+            gap: 0; /* JSで計算しやすくするためgapは0にし、paddingで調整するか、そのままgapを使うか。今回はgapなしでitemにmarginを持たせる方が計算が楽だが、gapありでもOK。 */
+            /* gap: 2rem; を削除し、item側にmarginを持たせます */
+            padding: 4rem 0;
+            /* scroll-snap-type: x mandatory; */ /* 自動スクロールのため無効化 */
+            cursor: grab; /* ドラッグ可能を示すカーソル */
+        }
+        .room-sec:active { cursor: grabbing; }
+        
+        .room-item { 
+            min-width: 300px;
+            width: 300px;
+            flex: 0 0 auto;
+            /* scroll-snap-align: center; */
+            background: transparent; /* 背景透明 */
+            box-shadow: none; /* 影なし */
+            margin-right: 2rem; /* gapの代わり */
+            user-select: none; /* ドラッグ時のテキスト選択防止 */
+        }
+        
+        /* 画像ラッパー */
+        .r-img-wrap {
+            width: 100%; height: 200px; overflow: hidden; position: relative;
+            pointer-events: none; /* 画像のドラッグ防止 */
+        }
+        /* 画像 */
+        .r-img {
+            width: 100%; height: 100%;
+            object-fit: contain; /* 全体が見えるように変更（必要に応じてcoverに戻す） */
+            display: block;
+            position: static;
+            transform: none !important;
+        }
+
+        .r-info {
+            background: transparent; /* 背景透明 */
+            padding: 1rem 0; 
+            width: auto; margin: 0;
+            position: relative; box-shadow: none;
+            text-align: center; z-index: 2;
+        }
+        .r-name { font-family: 'Cinzel', serif; font-size: 1.2rem; margin-bottom: 0.5rem; color: #111; }
+        
+        .btn {
+            display: inline-block; border-bottom: 1px solid var(--text); padding-bottom: 5px;
+            margin-top: 1.5rem; text-decoration: none; color: var(--text); letter-spacing: 0.1em;
+            cursor: pointer; transition: 0.3s;
+        }
+        .btn:hover { opacity: 0.6; }
+
+        /* モーダルウィンドウ */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-content {
+            background: #fff; width: 90%; max-width: 800px; max-height: 90vh;
+            display: flex; flex-direction: column; overflow: hidden; position: relative;
+            transform: translateY(20px); transition: transform 0.4s ease;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        
+        .modal-img {
+            width: 100%; height: 50vh; object-fit: cover; display: block;
+        }
+        .modal-body {
+            padding: 3rem; overflow-y: auto; text-align: center;
+        }
+        .modal-title { font-family: 'Cinzel', serif; font-size: 2rem; margin: 0 0 1.5rem; }
+        .modal-desc { line-height: 2; color: #555; font-size: 1rem; text-align: left; }
+        
+        .modal-close {
+            position: absolute; top: 1rem; right: 1rem; color: #fff; background: rgba(0,0,0,0.5);
+            width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; font-family: sans-serif; font-size: 1.2rem; transition: 0.3s; z-index: 10;
+        }
+        .modal-close:hover { background: #000; }
+
+        /* 事業概要 */
+        .business-overview {
+            background: #1a1a1a; color: #fff; padding: 4rem 2rem; text-align: center;
+            letter-spacing: 0.1em;
+        }
+        .bo-title { font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--gold); margin-bottom: 2rem; }
+        .bo-info p { margin: 0.8rem 0; font-size: 0.9rem; color: #ccc; }
+        .bo-mail { color: #fff; text-decoration: none; border-bottom: 1px solid #555; padding-bottom: 2px; }
+
+        /* ブックバー（固定フッター） */
+        .book-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #fff; z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
+            padding: 1rem 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            gap: 1rem;
+        }
+        .bb-text {
+            color: #000; font-family: 'Cinzel', serif; font-size: 1.2rem; letter-spacing: 0.1em;
+        }
+        .bb-box {
+            background: #000; color: #fff; padding: 0.5rem 1rem;
+            font-family: 'Cinzel', serif; font-size: 1rem; letter-spacing: 0.1em;
+            display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 1.5rem; }
+            .logo { font-size: 1.4rem; }
+            .h-title { font-size: 2.5rem; }
+            .h-sub { font-size: 0.7rem; }
+            .r-img-wrap { height: 50vh; }
+            .r-info { width: 85%; padding: 2rem; margin-top: -3rem; }
+            .modal-body { padding: 2rem; }
+            .modal-img { height: 40vh; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div id="brand" class="logo"></div>
+    </header>
+
+    <div class="hero" id="hero-slider">
+        <div class="hero-txt">
+            <h1 id="hero-title" class="h-title"></h1>
+            <span id="hero-sub" class="h-sub"></span>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="concept-box">
+            <div id="concept-text" class="fade-in"></div>
+        </div>
+
+        <section id="rooms" class="room-sec">
+        </section>
+    </div>
+
+    <div class="business-overview">
+        <div class="bo-title">Reitaku University</div>
+        <div class="bo-info">
+            <p>2-1-1 Hikarigaoka, Kashiwa-shi, Chiba, Japan</p>
+            <p><a href="https://www.reitaku-u.ac.jp/" class="bo-mail" target="_blank">www.reitaku-u.ac.jp</a></p>
+        </div>
+    </div>
+
+
+    <div id="modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeModal()">×</div>
+            <img id="modal-img" src="" class="modal-img" onclick="closeModal()" style="cursor: pointer;">
+            <div class="modal-body">
+                <h2 id="modal-title" class="modal-title"></h2>
+                <p id="modal-desc" class="modal-desc"></p>
+                <a href="https://coderk-star.github.io/ReitakuMap/" target="_blank" class="btn" style="margin-top: 2rem; border: 1px solid #000; padding: 0.5rem 2rem;">詳細はこちら</a>
+            </div>
+        </div>
+    </div>
+    <div class="book-bar">
+        <span class="bb-text">Reitaku</span>
+        <div class="bb-box">University</div>
+    </div>
+</body>
+</html>
