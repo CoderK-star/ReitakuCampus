@@ -11,20 +11,20 @@
                 <h3 style="font-size: 1.1rem; margin: 0 0 2rem 0; font-weight: normal; color: #555;">360°でキャンパスツアーをしてみよう！</h3>
                 <p style="font-size: 1rem; line-height: 2.2; margin: 0; color: #555;">
                     麗澤大学のキャンパスは、豊かな緑に囲まれ落ち着いた環境と、<br>
-                    学生の挑戦を支える充実した施設設備がたくさんあります。<br>
-                    自然にあふれるキャンパス内を全国で、どこでも体験できます！
+                    学生の挑戦を支える充実した施設設備が特徴です。<br>
+                    このサイトはパノラマ機能（360°ビュー）や地図を活用して、麗澤大学のキャンパス内を体験できるように制作したものです。
                 </p>
             `,
             
             // 各コンテンツ（部屋など）のデータ
             // image1.jpg が textData[0]、image2.jpg が textData[1]... に対応します
             textData: [
-                { name: "「さつき」校舎", desc: "工学部の校舎。" },
-                { name: "「かえで」校舎", desc: "経済学部、経営学部の校舎。" },
-                { name: "「あすなろ」校舎", desc: "国際学部、外国語学部の校舎。" },
-                { name: "研究棟", desc: "最先端の研究設備を備えた研究棟。" },
-                { name: "図書館", desc: "豊富な本と快適な学習環境を提供する図書館。" },
-                { name: "「ひいらぎ」食堂", desc: "学生の憩いの場である食堂。" },
+                { name: "「さつき」校舎", desc: "工学部の校舎。", pano: "CopyOfMap/images/part2/satsuki_out.jpg" },
+                { name: "「かえで」校舎", desc: "経済学部、経営学部の校舎。", pano: "CopyOfMap/images/part2/kaede_front.jpg" },
+                { name: "「あすなろ」校舎", desc: "国際学部、外国語学部の校舎。", pano: "CopyOfMap/images/part2/asunaro1.jpg" },
+                { name: "研究棟", desc: "最先端の研究設備を備えた研究棟。", pano: "CopyOfMap/images/part2/kennkyuutou_mae.jpg" },
+                { name: "図書館", desc: "豊富な本と快適な学習環境を提供する図書館。", pano: "CopyOfMap/images/part2/tosyokann_soto.jpg" },
+                { name: "「ひいらぎ」食堂", desc: "学生の憩いの場である食堂。", pano: "CopyOfMap/images/part2/hiiragi_1.jpg" },
             ]
         };
 
@@ -69,6 +69,29 @@
 
             // 無限スライダーの初期化
             initInfiniteSlider();
+
+            // Listen for map iframe "exit" button requests (close overlay + scroll back to section).
+            window.addEventListener('message', (event) => {
+                const data = event.data;
+                const shouldClose = data === 'closeMapOverlay' || (data && data.type === 'reitaku:closeMapOverlay');
+                if (!shouldClose) return;
+
+                const overlay = document.getElementById('map-overlay');
+                const iframe = document.getElementById('map-frame');
+                if (overlay) {
+                    overlay.style.opacity = '0';
+                    overlay.style.pointerEvents = 'none';
+                }
+                if (iframe) {
+                    setTimeout(() => { iframe.src = ''; }, 550);
+                }
+
+                const targetSectionId = (data && data.targetSectionId) ? data.targetSectionId : 'rooms';
+                const section = document.getElementById(targetSectionId);
+                if (section && typeof section.scrollIntoView === 'function') {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
 
             // スライダーロジック
             const slides = document.querySelectorAll('.slide');
@@ -126,17 +149,23 @@
                 const dataIndex = index - 1;
                 const name = config.textData[dataIndex] ? config.textData[dataIndex].name : `Model ${index}`;
                 const desc = config.textData[dataIndex] ? config.textData[dataIndex].desc : `Campus view ${index}`;
+                const pano = config.textData[dataIndex] ? config.textData[dataIndex].pano : '';
+                
                 const safeName = name.replace(/'/g, "\\'");
                 const safeDesc = desc.replace(/'/g, "\\'").replace(/\n/g, "");
+                const safePano = pano ? pano.replace(/'/g, "\\'") : '';
+
+                // パノラマがある場合はopenPanorama、なければopenModal（または何もしない）
+                const clickAction = safePano ? `openPanorama('${safePano}')` : `openModal('${safeName}', '${safeDesc}', '${imgPath}')`;
 
                 return `
                     <div class="room-item fade-in">
                         <div class="r-img-wrap">
-                            <img src="${imgPath}" class="r-img" onclick="openModal('${safeName}', '${safeDesc}', '${imgPath}')" style="cursor:pointer;">
+                            <img src="${imgPath}" class="r-img" onclick="${clickAction}" style="cursor:pointer;">
                         </div>
                         <div class="r-info">
                             <h2 class="r-name">${name}</h2>
-                            <a href="javascript:void(0)" class="btn" onclick="openModal('${safeName}', '${safeDesc}', '${imgPath}')">VIEW</a>
+                            <a href="javascript:void(0)" class="btn view-btn" data-tooltip="360°ビューで見る" onclick="${clickAction}">VIEW</a>
                         </div>
                     </div>
                 `;
@@ -154,6 +183,22 @@
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
         }
+
+        // パノラマビューワー操作関数（Iframe版）
+        function openPanorama(panoPath) {
+            const overlay = document.getElementById('map-overlay');
+            const iframe = document.getElementById('map-frame');
+            
+            // パスからファイル名を抽出 (例: "CopyOfMap/images/part2/satsuki_out.jpg" -> "satsuki_out.jpg")
+            const filename = panoPath.split('/').pop();
+            
+            // iframeのsrcを設定してマップを開く（panoパラメータ付き）
+            iframe.src = `CopyOfMap/index.html?pano=${filename}`;
+            
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'auto';
+        }
+
         document.getElementById('modal').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
         });

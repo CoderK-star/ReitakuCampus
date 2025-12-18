@@ -112,6 +112,28 @@
             transform: none !important;
         }
 
+        /* Rooms header */
+        .rooms-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 3rem 0 1rem;
+            text-align: center;
+        }
+        .rooms-header h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            margin: 0;
+            color: var(--text);
+            letter-spacing: 0.12em;
+        }
+        .rooms-header .rooms-sub {
+            font-size: 0.95rem;
+            color: #666;
+        }
+
         .r-info {
             background: transparent; /* 背景透明 */
             padding: 1rem 0; 
@@ -127,6 +149,35 @@
             cursor: pointer; transition: 0.3s;
         }
         .btn:hover { opacity: 0.6; }
+
+        .btn.view-btn {
+            position: relative;
+        }
+
+        .btn.view-btn::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 50% + 20px;
+            bottom: calc(100% - 70px);
+            transform: translateX(-50%);
+            background: #000;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            padding: 6px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+
+        .btn.view-btn:hover::after,
+        .btn.view-btn:focus-visible::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-2px);
+        }
 
         /* モーダルウィンドウ */
         .modal-overlay {
@@ -161,7 +212,7 @@
 
         /* 事業概要 */
         .business-overview {
-            background: #1a1a1a; color: #fff; padding: 4rem 2rem; text-align: center;
+            background: #666666; color: #fff; padding: 4rem 2rem; text-align: center;
             letter-spacing: 0.1em;
         }
         .bo-title { font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--gold); margin-bottom: 2rem; }
@@ -181,7 +232,7 @@
             color: #000; font-family: 'Cinzel', serif; font-size: 1.2rem; letter-spacing: 0.1em;
         }
         .bb-box {
-            background: #000; color: #fff; padding: 0.5rem 1rem;
+            background: #666666; color: #fff; padding: 0.5rem 1rem;
             font-family: 'Cinzel', serif; font-size: 1rem; letter-spacing: 0.1em;
             display: inline-block;
         }
@@ -215,7 +266,18 @@
             <div id="concept-text" class="fade-in"></div>
         </div>
 
+        <div class="rooms-header fade-in">
+            <h2>Gallery</h2>
+        </div>
+
         <section id="rooms" class="room-sec">
+        </section>
+
+        <section id="map-section" class="fade-in" style="margin-top: 8rem; margin-bottom: 5rem;">
+            <h2 style="font-family: 'Cinzel', serif; font-size: 2rem; margin-bottom: 2rem; letter-spacing: 0.1em;">Campus Map</h2>
+            <div style="width: 100%; height: 500px; border: 1px solid #000; position: relative;">
+                <iframe src="./CopyOfMap/index.html" style="width: 100%; height: 100%; border: none; display: block;"></iframe>
+            </div>
         </section>
     </div>
 
@@ -239,6 +301,12 @@
             </div>
         </div>
     </div>
+
+    <!-- Map Overlay (Iframe) -->
+    <div id="map-overlay" style="position: fixed; inset: 0; z-index: 3000; background: #000; opacity: 0; pointer-events: none; transition: opacity 0.5s;">
+        <iframe id="map-frame" style="width: 100%; height: 100%; border: none;" allow="fullscreen"></iframe>
+    </div>
+
     <div class="book-bar">
         <span class="bb-text">Reitaku</span>
         <div class="bb-box">University</div>
