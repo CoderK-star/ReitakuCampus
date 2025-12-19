@@ -1,75 +1,117 @@
---------------------------------------------------
-【テンプレート名：Sanctuary｜EYAN 】
---------------------------------------------------
+# ReitakuCampus - 麗澤大学キャンパスツアー
 
-この度はダウンロードありがとうございます。
-本ファイルは、Web制作等の学習・実務・趣味に、
-利用規約の範囲内で自由にお使いいただけるHTMLテンプレートです。
+このプロジェクトは、麗澤大学のキャンパスを360°パノラマビューと地図で体験できるWebサイトです。
 
-使い方は、以下のオンラインマニュアルをご覧ください。
+## リポジトリのクローン方法 (How to Clone)
 
-■ オンラインマニュアル（使い方）
+### 1. HTTPSを使用したクローン
+```bash
+git clone https://github.com/CoderK-star/ReitakuCampus.git
+cd ReitakuCampus
+```
 
-→ https://amix-design.com/tominaga/eyan-theme/manual
+### 2. SSHを使用したクローン（SSH鍵を設定済みの場合）
+```bash
+git clone git@github.com:CoderK-star/ReitakuCampus.git
+cd ReitakuCampus
+```
 
-※画像の設定方法や、色の変え方などを解説しています。
+### 3. GitHub CLIを使用したクローン
+```bash
+gh repo clone CoderK-star/ReitakuCampus
+cd ReitakuCampus
+```
 
--------------
+## セットアップ (Setup)
 
-■ うまく使いこなすコツ
-「EYAN」は、AI（Geminiなど）と一緒に編集することを前提に作られたテンプレートです。 
-「AIにどう指示を出せばいいかわからない」「もっと自由にカスタマイズしたい」という方向けに、
-具体的な指示出しのコツをまとめた解説書をご用意しています。
+このプロジェクトは純粋なHTML/CSS/JavaScriptで構築されているため、特別なビルドツールやパッケージマネージャーは必要ありません。
 
-→ https://amix-design.com/tominaga/eyan-theme/nextstep
+### 必要なもの
+- Webブラウザ（Chrome, Firefox, Safari, Edgeなど）
+- ローカルWebサーバー（開発環境用）
 
-「このテンプレートをもっと自由に改造したい」「AIを使って爆速で制作したい」
-そんな方向けに、知識ゼロから始めるAIコーディング術を有料記事にて公開しています。
+## 実行方法 (How to Run)
 
-⭐︎⭐︎⭐︎【購入者特典】記事ご購入者限定でクリエイティブテンプレートがDL可能になります。⭐︎⭐︎⭐︎
+### 方法1: ローカルWebサーバーを使用（推奨）
 
--------------
+#### Pythonを使用
+```bash
+python3 -m http.server 8000
+# または python -m http.server 8000
+```
 
-■ 利用規約・ライセンス
-→ https://amix-design.com/tominaga/eyan-theme/license 
-※ご利用前に必ずご確認ください。（商用利用、禁止事項など）
+#### Node.jsのhttp-serverを使用
+```bash
+npx http-server -p 8000
+```
 
--------------
+#### PHPを使用
+```bash
+php -S localhost:8000
+```
 
-■ ファイル構成
-├── index.html
-└── image/（画像フォルダ）
+その後、ブラウザで以下にアクセス：
+```
+http://localhost:8000
+```
 
-■ 画像の設定
-・main1.jpg ～ main5.jpg を image フォルダに入れるとトップ背景（スライド）に反映
-・image1.jpg ～ image18.jpg を image フォルダに入れるとコンテンツに自動表示
-・推奨サイズ: トップ用は1920×1080px程度、その他は1200×800px程度
+### 方法2: Visual Studio Code Live Server拡張機能を使用
+1. VS Codeで「Live Server」拡張機能をインストール
+2. `index.html`を右クリック
+3. "Open with Live Server"を選択
 
-■ 使用ライブラリ・クレジット
-テンプレートの仕様に応じて以下の外部リソース（オープンソースライセンス等）が使用されている場合があります。
-該当するリソースが含まれるテンプレートを使用する場合は、各ライセンス規定に従ってください。
+### 方法3: ブラウザで直接開く
+`index.html`をブラウザにドラッグ＆ドロップするか、ダブルクリックで開きます。
+（注意: 一部の機能が正しく動作しない可能性があります）
 
-・anime.js (MIT License) - Copyright (c) Julian Garnier
-・Three.js (MIT License)
-・Google Fonts (SIL Open Font License)
-・その他、各ファイルのソースコード内に記述されたライブラリ
+## プロジェクト構造
 
-※テンプレートにより使用ライブラリが異なります。
+```
+ReitakuCampus/
+├── index.html          # メインHTMLファイル
+├── page.js             # メインJavaScriptファイル（設定とロジック）
+├── README.txt          # このファイル
+├── image/              # 画像ファイル
+│   ├── main1.jpg - main5.jpg    # ヒーロースライダー用画像（5枚）
+│   └── model1.png - model6.png  # ギャラリー用画像（6枚）
+└── CopyOfMap/          # 360°パノラマビューとマップ機能
+    ├── index.html      # マップビューア
+    ├── js/             # マップ用JavaScript
+    ├── images/         # パノラマ画像
+    └── icons/          # アイコン画像
+```
 
--------------
+## カスタマイズ
 
-■ サポート・お問い合わせについて
-本テーマは無料配布コンテンツのため、個別のカスタマイズ方法や
-設置に関する技術的なサポート（メール対応等）は原則行っておりません。
-マニュアルや、上記のAI活用ノウハウ等をご参照いただき、ご自身での解決をお願いいたします。
+`page.js`の`config`オブジェクトを編集することで、サイトの内容をカスタマイズできます：
 
-※明らかなバグの報告や、お仕事のご依頼等は以下より受け付けております。
-→ https://amix-design.com/tominaga/contact
+- `name`: サイト左上のロゴ名
+- `hero`: トップエリアのタイトルとサブタイトル
+- `concept`: コンセプト文章
+- `textData`: 各施設の情報（名前、説明、パノラマ画像パス）
 
+## 機能
 
-【無料DL】AIで育てるWebサイトテンプレート「EYAN」
-https://amix-design.com/tominaga/eyan-theme
+- ✨ 360°パノラマビュー
+- 🗺️ インタラクティブなキャンパスマップ
+- 🖼️ 自動スライダー付きギャラリー
+- 📱 レスポンシブデザイン（モバイル対応）
+- 🖱️ ドラッグ可能な無限スクロールギャラリー
 
---------------------------------------------------
-Copyright (C) 2025 EYAN / トミナガハルキ. All Rights Reserved.
---------------------------------------------------
+## ブラウザ対応
+
+- Google Chrome（推奨）
+- Mozilla Firefox
+- Safari
+- Microsoft Edge
+- その他のモダンブラウザ
+
+## ライセンス
+
+このプロジェクトは麗澤大学のキャンパスツアー用に作成されています。
+
+## お問い合わせ
+
+麗澤大学
+〒277-8686 千葉県柏市光ヶ丘2-1-1
+https://www.reitaku-u.ac.jp/
