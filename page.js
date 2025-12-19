@@ -19,12 +19,12 @@
             // 各コンテンツ（部屋など）のデータ
             // image1.jpg が textData[0]、image2.jpg が textData[1]... に対応します
             textData: [
-                { name: "「さつき」校舎", desc: "工学部の校舎。", pano: "CopyOfMap/images/part2/satsuki_out.jpg" },
-                { name: "「かえで」校舎", desc: "経済学部、経営学部の校舎。", pano: "CopyOfMap/images/part2/kaede_front.jpg" },
-                { name: "「あすなろ」校舎", desc: "国際学部、外国語学部の校舎。", pano: "CopyOfMap/images/part2/asunaro1.jpg" },
-                { name: "研究棟", desc: "最先端の研究設備を備えた研究棟。", pano: "CopyOfMap/images/part2/kennkyuutou_mae.jpg" },
-                { name: "図書館", desc: "豊富な本と快適な学習環境を提供する図書館。", pano: "CopyOfMap/images/part2/tosyokann_soto.jpg" },
-                { name: "「ひいらぎ」食堂", desc: "学生の憩いの場である食堂。", pano: "CopyOfMap/images/part2/hiiragi_1.jpg" },
+                { name: "「さつき」校舎", desc: "工学部の校舎。", pano: "Map/images/part2/satsuki_out.jpg" },
+                { name: "「かえで」校舎", desc: "経済学部、経営学部の校舎。", pano: "Map/images/part2/kaede_front.jpg" },
+                { name: "「あすなろ」校舎", desc: "国際学部、外国語学部の校舎。", pano: "Map/images/part2/asunaro1.jpg" },
+                { name: "研究棟", desc: "最先端の研究設備を備えた研究棟。", pano: "Map/images/part2/kennkyuutou_mae.jpg" },
+                { name: "図書館", desc: "豊富な本と快適な学習環境を提供する図書館。", pano: "Map/images/part2/tosyokann_soto.jpg" },
+                { name: "「ひいらぎ」食堂", desc: "学生の憩いの場である食堂。", pano: "Map/images/part2/hiiragi_1.jpg" },
             ]
         };
 
@@ -189,19 +189,15 @@
             const overlay = document.getElementById('map-overlay');
             const iframe = document.getElementById('map-frame');
             
-            // パスからファイル名を抽出 (例: "CopyOfMap/images/part2/satsuki_out.jpg" -> "satsuki_out.jpg")
+            // パスからファイル名を抽出 (例: "Map/images/part2/satsuki_out.jpg" -> "satsuki_out.jpg")
             const filename = panoPath.split('/').pop();
             
             // iframeのsrcを設定してマップを開く（panoパラメータ付き）
-            iframe.src = `CopyOfMap/index.html?pano=${filename}`;
+            iframe.src = `Map/index.html?pano=${filename}`;
             
             overlay.style.opacity = '1';
             overlay.style.pointerEvents = 'auto';
         }
-
-        document.getElementById('modal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
-        });
 
         // パララックスエフェクト関数
         function initParallax() {
@@ -237,7 +233,7 @@
             });
 
             // 変数設定
-            const baseSpeed = 1; // 自動スクロールの基本速度
+            const baseSpeed = 0.5; // 自動スクロールの基本速度
             let velocity = baseSpeed; // 現在の速度
             let isDragging = false;
             let lastPageX = 0;

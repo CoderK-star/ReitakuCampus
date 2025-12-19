@@ -364,8 +364,6 @@ function fitMapToMarkers(data) {
     });
 }
 
-// Side panel機能は無効化しているため、updatePanelWithItems / updateSidePanel は削除
-
 // Setup event listeners
 function setupEventListeners() {
     const campusLinkBtn = document.getElementById('campus-map-link');
