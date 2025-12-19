@@ -36,8 +36,8 @@ cd ReitakuCampus
 
 #### Pythonを使用
 ```bash
-python -m http.server 8000
-# または python3 -m http.server 8000
+python3 -m http.server 8000
+# または python -m http.server 8000
 ```
 
 #### Node.jsのhttp-serverを使用
@@ -72,8 +72,8 @@ ReitakuCampus/
 ├── page.js             # メインJavaScriptファイル（設定とロジック）
 ├── README.txt          # このファイル
 ├── image/              # 画像ファイル
-│   ├── main1.jpg - main5.jpg    # ヒーロースライダー用画像
-│   └── model*.png               # ギャラリー用画像（現在6枚）
+│   ├── main1.jpg - main5.jpg    # ヒーロースライダー用画像（5枚）
+│   └── model1.png - model6.png  # ギャラリー用画像（6枚）
 └── CopyOfMap/          # 360°パノラマビューとマップ機能
     ├── index.html      # マップビューア
     ├── js/             # マップ用JavaScript
