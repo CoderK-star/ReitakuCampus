@@ -238,6 +238,7 @@
             let isDragging = false;
             let lastPageX = 0;
             let lastScrollPos = 0;
+            let lastTime = 0;
             
             // 1セット分の幅を計算（アイテム幅 + マージン）
             // ※CSSで width: 300px, margin-right: 2rem (32px) としている前提
@@ -248,12 +249,24 @@
             slider.scrollLeft = totalWidth;
             lastScrollPos = totalWidth;
 
-            function step() {
+            function step(timestamp) {
+                if (!lastTime) lastTime = timestamp;
+                const deltaTime = timestamp - lastTime;
+                lastTime = timestamp;
+
+                // 60FPSを基準としたタイムスケール (16.67ms = 1)
+                // deltaTimeが大きすぎる場合（タブ切り替え復帰時など）は補正
+                const timeScale = (deltaTime > 50) ? 1 : (deltaTime / 16.67);
+
                 if (isDragging) {
                     // ドラッグ中は、移動量（速度）を計算して保持しておく
                     // ※mousemoveでscrollLeftが変わるので、その差分を速度とする
                     const currentPos = slider.scrollLeft;
-                    velocity = currentPos - lastScrollPos;
+                    
+                    // timeScaleで割ることで、フレームレートに依存しない速度(px/frame@60fps)に変換
+                    if (timeScale > 0.1) {
+                        velocity = (currentPos - lastScrollPos) / timeScale;
+                    }
                     
                     // ループによる急激な変化を無視するための補正
                     // （ドラッグ中にループ境界をまたいだ場合、velocityが異常値になるのを防ぐ）
@@ -262,11 +275,12 @@
                     }
                 } else {
                     // ドラッグしていない時は、速度を加算して移動
-                    slider.scrollLeft += velocity;
+                    // timeScaleを掛けて、実時間に基づいた移動量にする
+                    slider.scrollLeft += velocity * timeScale;
                     
                     // 摩擦処理：徐々に基本速度(baseSpeed)に戻す
                     // 慣性スクロールが終わると自動スクロールに戻る動き
-                    velocity += (baseSpeed - velocity) * 0.05;
+                    velocity += (baseSpeed - velocity) * 0.05 * timeScale;
                 }
                 
                 // ループ処理：スクロール位置が範囲外に出たら巻き戻す
