@@ -233,7 +233,7 @@
             });
 
             // 変数設定
-            const baseSpeed = 0.5; // 自動スクロールの基本速度
+            const baseSpeed = 1; // 自動スクロールの基本速度
             let velocity = baseSpeed; // 現在の速度
             let isDragging = false;
             let lastPageX = 0;
