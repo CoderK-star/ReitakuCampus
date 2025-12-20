@@ -233,7 +233,7 @@
             });
 
             // 変数設定
-            const baseSpeed = 1; // 自動スクロールの基本速度
+            const baseSpeed = 0.5; // 自動スクロールの基本速度
             let velocity = baseSpeed; // 現在の速度
             let isDragging = false;
             let lastPageX = 0;
@@ -247,6 +247,7 @@
 
             // 初期位置を真ん中のセットの先頭に設定
             slider.scrollLeft = totalWidth;
+            let scrollPos = totalWidth; // ★追加: 浮動小数点で位置を管理
             lastScrollPos = totalWidth;
 
             function step(timestamp) {
@@ -262,6 +263,7 @@
                     // ドラッグ中は、移動量（速度）を計算して保持しておく
                     // ※mousemoveでscrollLeftが変わるので、その差分を速度とする
                     const currentPos = slider.scrollLeft;
+                    scrollPos = currentPos; // ★同期
                     
                     // timeScaleで割ることで、フレームレートに依存しない速度(px/frame@60fps)に変換
                     if (timeScale > 0.1) {
@@ -276,7 +278,8 @@
                 } else {
                     // ドラッグしていない時は、速度を加算して移動
                     // timeScaleを掛けて、実時間に基づいた移動量にする
-                    slider.scrollLeft += velocity * timeScale;
+                    scrollPos += velocity * timeScale;
+                    slider.scrollLeft = scrollPos;
                     
                     // 摩擦処理：徐々に基本速度(baseSpeed)に戻す
                     // 慣性スクロールが終わると自動スクロールに戻る動き
@@ -285,10 +288,12 @@
                 
                 // ループ処理：スクロール位置が範囲外に出たら巻き戻す
                 // [Set1] [Set2] [Set3] のうち、Set2の範囲内に留める
-                if (slider.scrollLeft >= totalWidth * 2) {
-                    slider.scrollLeft -= totalWidth;
-                } else if (slider.scrollLeft <= 0) {
-                    slider.scrollLeft += totalWidth;
+                if (scrollPos >= totalWidth * 2) {
+                    scrollPos -= totalWidth;
+                    slider.scrollLeft = scrollPos;
+                } else if (scrollPos <= 0) {
+                    scrollPos += totalWidth;
+                    slider.scrollLeft = scrollPos;
                 }
 
                 // 次のフレームのために位置を保存
