@@ -22,12 +22,13 @@ const CATEGORIES = {
 
 const DEFAULT_COLOR = "#43c59e";
 const MINIMAP_DEFAULT_ICON = 'images/minimap/asunaro.png';
-const STREET_CATEGORY_ORDER = ['satsuki', 'kaede', 'asunaro', 'hiiragi', 'outside', 'kenkyuutou', 'toshokan'];
+const STREET_CATEGORY_ORDER = ['satsuki', 'kaede', 'asunaro', 'hiiragi', 'graduate', 'outside', 'kenkyuutou', 'toshokan'];
 const MINIMAP_COLORS = {
     satsuki: '#2d9bf0',
     kaede: '#34a853',
     asunaro: '#fbbc04',
     hiiragi: '#a142f4',
+    graduate: '#ff9800',
     outside: '#e84545',
     kenkyuutou: '#00acc1',
     toshokan: '#6d4c41'
@@ -40,6 +41,7 @@ const STREETVIEW_CARD_GROUPS = {
     kaede: { label: 'かえで', color: MINIMAP_COLORS.kaede },
     asunaro: { label: 'あすなろ', color: MINIMAP_COLORS.asunaro },
     hiiragi: { label: 'ひいらぎ', color: MINIMAP_COLORS.hiiragi },
+    graduate: { label: '大学院', color: MINIMAP_COLORS.graduate },
     kenkyuutou: { label: '研究棟', color: MINIMAP_COLORS.kenkyuutou },
     toshokan: { label: '図書館', color: MINIMAP_COLORS.toshokan },
     outside: { label: '屋外', color: MINIMAP_COLORS.outside }
@@ -1771,8 +1773,8 @@ function getStreetGroupSlug(item) {
     // "広場" は屋外グループに含める。
     if (joined.includes('広場')) return 'outside';
 
-    // "麗澤大学院&生涯教育プラザ" は大学院グループに含める。
-    if (joinedNormalized.includes('麗澤大学院・生涯教育プラザ')) return 'graduate';
+    // "麗澤大学院&生涯教育プラザ"（区切り記号の揺れ含む）は大学院グループに含める。
+    if (/麗澤大学院\s*[&・･]\s*生涯教育プラザ/.test(joinedNormalized)) return 'graduate';
     if (joined.includes('麗澤大学院') || joined.includes('生涯教育プラザ')) return 'graduate';
     // Fallback: any "大学院" spot goes to graduate group if not otherwise categorized.
     if (joined.includes('大学院')) return 'graduate';
