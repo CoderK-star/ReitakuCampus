@@ -32,7 +32,7 @@ def resize_image(src: Path, dst: Path) -> None:
         else:
             resized = im
         dst.parent.mkdir(parents=True, exist_ok=True)
-        resized.save(dst, format="JPG", optimize=True, quality=JPEG_QUALITY)
+        resized.save(dst, format="JPEG", optimize=True, quality=JPEG_QUALITY)
 
 
 def process_directory(src_dir: Path) -> tuple[int, int]:
@@ -65,13 +65,18 @@ def main() -> int:
     total_processed = 0
     total_skipped = 0
 
-    # Process all directories matching 'part*' in images/
-    for part_dir in sorted(IMAGES_DIR.glob("part*")):
-        if not part_dir.is_dir():
+    # Process all subdirectories in images/, excluding specific ones
+    excluded_dirs = {"minimap", "thumbs"}
+
+    for img_dir in sorted(IMAGES_DIR.iterdir()):
+        if not img_dir.is_dir():
+            continue
+
+        if img_dir.name in excluded_dirs or img_dir.name.startswith('.'):
             continue
             
-        print(f"Processing directory: {part_dir.relative_to(ROOT)}")
-        p, s = process_directory(part_dir)
+        print(f"Processing directory: {img_dir.relative_to(ROOT)}")
+        p, s = process_directory(img_dir)
         total_processed += p
         total_skipped += s
 

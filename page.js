@@ -73,6 +73,15 @@
             // Listen for map iframe "exit" button requests (close overlay + scroll back to section).
             window.addEventListener('message', (event) => {
                 const data = event.data;
+
+                // Handle open request from embedded map
+                if (data && data.type === 'reitaku:openMapOverlay') {
+                    if (data.pano) {
+                        openPanorama(data.pano);
+                    }
+                    return;
+                }
+
                 const shouldClose = data === 'closeMapOverlay' || (data && data.type === 'reitaku:closeMapOverlay');
                 if (!shouldClose) return;
 

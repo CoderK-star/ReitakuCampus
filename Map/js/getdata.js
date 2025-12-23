@@ -147,12 +147,14 @@ var dataObject = window.dataObject; // maintain legacy global var used by map.js
             const rainBldKeys = ['rain_building','雨天建物','雨天棟名','雨天施設'];
             const rainLatKeys = ['rain_lat','雨天緯度','雨天緯度(十進)','雨天緯度（十進）'];
             const rainLonKeys = ['rain_lon','雨天経度','雨天経度(十進)','雨天経度（十進）'];
+            const orderKeys = ['order','sort','priority','表示順','並び順','順番','順序','sort_order','sortorder','display_order'];
 
             const looksLikeImage = (value) => {
                 return typeof value === 'string' && /\.(jpe?g|png|webp|heic|heif|gif)$/i.test(value.trim());
             };
 
-            for (const row of raw) {
+            for (let rowIndex = 0; rowIndex < raw.length; rowIndex++) {
+                const row = raw[rowIndex];
                 const latVal = pick(row, latKeys);
                 const lonVal = pick(row, lonKeys);
                 const lat = parseFloat(String(latVal ?? '').replace(/,/g, '.'));
@@ -178,8 +180,10 @@ var dataObject = window.dataObject; // maintain legacy global var used by map.js
                 const normalizedTitle = looksLikeImage(rawTitle) ? (buildingName || row.category || row.floor || rawTitle) : (rawTitle || fallbackTitle);
                 const rawStreetImage = pick(row, streetImgKeys) || row.streetViewImage || row.streetview || '';
                 const derivedStreetImage = rawStreetImage || (looksLikeImage(row.name) ? row.name : '') || (looksLikeImage(rawTitle) ? rawTitle : '');
+                const orderValue = pick(row, orderKeys) ?? row.order ?? row.sort ?? row.priority;
 
                 norm.push({
+                    __rowIndex: rowIndex,
                     lat, lon,
                     title: normalizedTitle || fallbackTitle,
                     category: pick(row, catKeys) || row.category || '',
@@ -200,6 +204,8 @@ var dataObject = window.dataObject; // maintain legacy global var used by map.js
                     minimapX: Number.isNaN(minimapXNum) ? undefined : minimapXNum,
                     minimapY: Number.isNaN(minimapYNum) ? undefined : minimapYNum,
                     minimapCategory: pick(row, catKeys) || row.category || '',
+                    // Optional ordering: if you add "order" (or "表示順") column in the sheet, map.js will sort by it.
+                    order: orderValue ?? '',
                     streetViewImage: derivedStreetImage,
                     streetViewYaw: pick(row, streetYawKeys) || row.streetViewYaw || '',
                     streetViewPitch: pick(row, streetPitchKeys) || row.streetViewPitch || '',

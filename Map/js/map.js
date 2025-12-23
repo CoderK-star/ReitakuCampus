@@ -33,6 +33,18 @@ const MINIMAP_COLORS = {
     toshokan: '#6d4c41'
 };
 
+// Grouping for streetview location cards (carousel).
+// Add/remove keys here to control which categories get an outline + label.
+const STREETVIEW_CARD_GROUPS = {
+    satsuki: { label: 'さつき', color: MINIMAP_COLORS.satsuki },
+    kaede: { label: 'かえで', color: MINIMAP_COLORS.kaede },
+    asunaro: { label: 'あすなろ', color: MINIMAP_COLORS.asunaro },
+    hiiragi: { label: 'ひいらぎ', color: MINIMAP_COLORS.hiiragi },
+    kenkyuutou: { label: '研究棟', color: MINIMAP_COLORS.kenkyuutou },
+    toshokan: { label: '図書館', color: MINIMAP_COLORS.toshokan },
+    outside: { label: '屋外', color: MINIMAP_COLORS.outside }
+};
+
 const DEFAULT_STANDARD_STYLE_URL = 'https://api.maptiler.com/maps/streets-v4/style.json?key=z2iOmrIdt1L9Yw9QsXS3';
 
 const BASE_LAYERS = {
@@ -1315,6 +1327,7 @@ function resolveStreetImage(item) {
     if (normalized.startsWith('images/')) return normalized;
     if (normalized.startsWith('part')) return `images/${normalized}`;
     if (normalized.startsWith('/')) return normalized.slice(1);
+    if (normalized.includes('/')) return `images/${normalized}`;
     return `images/part2/${normalized}`;
 }
 
@@ -1350,6 +1363,20 @@ function getStreetThumbnail(item) {
 function enterStreetView(item, contextItems) {
     if (!item) return;
     const panorama = resolveStreetImage(item);
+
+    // Check if we need to open in parent overlay (Embedded mode)
+    const isEmbedded = window.self !== window.top;
+    const isOverlay = new URLSearchParams(window.location.search).has('pano');
+    
+    if (isEmbedded && !isOverlay) {
+        // We are in the embedded map, request parent to open overlay
+        window.parent.postMessage({
+            type: 'reitaku:openMapOverlay',
+            pano: panorama
+        }, '*');
+        return;
+    }
+
     if (!panorama) {
         showError('この場所には360°画像が登録されていません。');
         return;
@@ -1560,6 +1587,30 @@ function updateStreetViewInfoPanel() {
     carousel.innerHTML = '';
     const catalog = getStreetSequence();
 
+    const resolveGroupKey = (spot) => {
+        const slug = getStreetGroupSlug(spot);
+        return slug && STREETVIEW_CARD_GROUPS[slug] ? slug : '';
+    };
+
+    const createGroupEl = (groupKey) => {
+        const def = STREETVIEW_CARD_GROUPS[groupKey] || {};
+        const group = document.createElement('div');
+        group.className = 'streetview-card-group';
+        group.dataset.group = groupKey;
+        const color = def.color || getMinimapColor(groupKey) || '#2d9bf0';
+        group.style.setProperty('--group-color', color);
+
+        const label = document.createElement('div');
+        label.className = 'streetview-card-group-label';
+        label.textContent = def.label || groupKey;
+        group.appendChild(label);
+
+        const cards = document.createElement('div');
+        cards.className = 'streetview-card-group-cards';
+        group.appendChild(cards);
+        return group;
+    };
+
     const canLazyLoadThumbs = 'IntersectionObserver' in window;
     const thumbObserver = canLazyLoadThumbs
         ? new IntersectionObserver((entries, observer) => {
@@ -1576,6 +1627,10 @@ function updateStreetViewInfoPanel() {
             });
         }, { root: carousel, rootMargin: '120px 0px', threshold: 0.05 })
         : null;
+
+    const fragment = document.createDocumentFragment();
+    let activeGroupKey = '';
+    let activeGroupCardsEl = null;
 
     catalog.forEach((spot) => {
         const card = document.createElement('button');
@@ -1628,8 +1683,23 @@ function updateStreetViewInfoPanel() {
             }
         });
 
-        carousel.appendChild(card);
+        const groupKey = resolveGroupKey(spot);
+        if (groupKey) {
+            if (groupKey !== activeGroupKey || !activeGroupCardsEl) {
+                activeGroupKey = groupKey;
+                const groupEl = createGroupEl(groupKey);
+                activeGroupCardsEl = groupEl.querySelector('.streetview-card-group-cards');
+                fragment.appendChild(groupEl);
+            }
+            activeGroupCardsEl.appendChild(card);
+        } else {
+            activeGroupKey = '';
+            activeGroupCardsEl = null;
+            fragment.appendChild(card);
+        }
     });
+
+    carousel.appendChild(fragment);
 
     if (!catalog.length) {
         const emptyMsg = document.createElement('p');
@@ -1680,6 +1750,36 @@ function getStreetDisplayName(item) {
     return classroom || title || location || 'スポット';
 }
 
+function getStreetGroupSlug(item) {
+    if (!item) return '';
+
+    const parts = [
+        item?.classroomname,
+        item?.title,
+        item?.location,
+        item?.building,
+        item?.minimapCategory,
+        item?.category
+    ]
+        .filter(v => typeof v === 'string' && v.trim().length)
+        .map(v => v.trim());
+
+    const joined = parts.join(' ');
+    const joinedNormalized = joined.replace(/＆/g, '&');
+
+    // Manual overrides based on card text.
+    // "広場" は屋外グループに含める。
+    if (joined.includes('広場')) return 'outside';
+
+    // "麗澤大学院&生涯教育プラザ" は大学院グループに含める。
+    if (joinedNormalized.includes('麗澤大学院・生涯教育プラザ')) return 'graduate';
+    if (joined.includes('麗澤大学院') || joined.includes('生涯教育プラザ')) return 'graduate';
+    // Fallback: any "大学院" spot goes to graduate group if not otherwise categorized.
+    if (joined.includes('大学院')) return 'graduate';
+
+    return normalizeMinimapCategory(item?.minimapCategory || item?.category);
+}
+
 function getExplicitPriority(item) {
     if (!item) return null;
     // Try exact matches first
@@ -1712,30 +1812,34 @@ function getStreetPriority(item) {
 }
 
 function compareStreetItems(a, b) {
-    // 0. Global priority override (ignores category)
-    const pA = getExplicitPriority(a);
-    const pB = getExplicitPriority(b);
-    
-    if (pA !== null && pB !== null) return pA - pB;
-    if (pA !== null) return -1; // Items with priority come first
-    if (pB !== null) return 1;
-
-    // 1. Category order
+    // 1. Category order (keeps category groups contiguous)
     const order = STREET_CATEGORY_ORDER;
-    const slugA = normalizeMinimapCategory(a?.minimapCategory || a?.category);
-    const slugB = normalizeMinimapCategory(b?.minimapCategory || b?.category);
+    const slugA = getStreetGroupSlug(a);
+    const slugB = getStreetGroupSlug(b);
     const idxA = order.indexOf(slugA);
     const idxB = order.indexOf(slugB);
     const rankA = idxA >= 0 ? idxA : order.length;
     const rankB = idxB >= 0 ? idxB : order.length;
     if (rankA !== rankB) return rankA - rankB;
 
-    // 2. Category-internal priority
+    // 2. Explicit ordering within the same category
+    const pA = getExplicitPriority(a);
+    const pB = getExplicitPriority(b);
+    if (pA !== null && pB !== null) return pA - pB;
+    if (pA !== null) return -1;
+    if (pB !== null) return 1;
+
+    // 3. Category-internal priority
     const priorityA = getStreetPriority(a);
     const priorityB = getStreetPriority(b);
     if (priorityA !== priorityB) return priorityA - priorityB;
 
-    // 3. Name fallback
+    // 4. Sheet row order fallback (keeps manual row order stable within same category)
+    const rowA = toFinite(a?.__rowIndex);
+    const rowB = toFinite(b?.__rowIndex);
+    if (rowA !== undefined && rowB !== undefined && rowA !== rowB) return rowA - rowB;
+
+    // 5. Name fallback
     const nameA = getStreetDisplayName(a).toLowerCase();
     const nameB = getStreetDisplayName(b).toLowerCase();
     return nameA.localeCompare(nameB, 'en');
