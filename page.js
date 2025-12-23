@@ -22,13 +22,22 @@
                 { name: "「さつき」校舎", desc: "工学部の校舎。", pano: "Map/images/part2/satsuki_out.jpg" },
                 { name: "「かえで」校舎", desc: "経済学部、経営学部の校舎。", pano: "Map/images/part2/kaede_front.jpg" },
                 { name: "「あすなろ」校舎", desc: "国際学部、外国語学部の校舎。", pano: "Map/images/part2/asunaro1.jpg" },
-                { name: "研究棟", desc: "最先端の研究設備を備えた研究棟。", pano: "Map/images/part2/kennkyuutou_mae.jpg" },
+                { name: "麗澤大学院", desc: "最先端の研究設備を備えた施設。", pano: "Map/images/part2/puraza.jpg" },
                 { name: "図書館", desc: "豊富な本と快適な学習環境を提供する図書館。", pano: "Map/images/part2/tosyokann_soto.jpg" },
                 { name: "「ひいらぎ」食堂", desc: "学生の憩いの場である食堂。", pano: "Map/images/part2/hiiragi_1.jpg" },
             ]
         };
 
         // ★スライダー画像の最大枚数（imageフォルダの main1.jpg, main2.jpg ... を読み込みます）
+        // Ensure the Graduate School VIEW button points to an existing panorama file.
+        // (Some builds only contain `kennkyuutou_mae.jpg` under `Map/images/part2/thumbs/`)
+        try {
+            const item = (config && config.textData && config.textData[3]) ? config.textData[3] : null;
+            if (item && typeof item.pano === 'string' && item.pano.includes('Map/images/part2/kennkyuutou_mae.jpg')) {
+                item.pano = 'Map/images/part2/thumbs/kennkyuutou_mae.jpg';
+            }
+        } catch (_) {}
+
         const MAX_HERO_IMAGES = 5;
         
         // ★リスト画像の最大枚数（imageフォルダの image1.jpg, image2.jpg ... を読み込みます）
@@ -42,7 +51,7 @@
             document.getElementById('hero-sub').textContent = config.hero.sub;
             document.getElementById('concept-text').innerHTML = config.concept;
 
-            // 1. ヒーロースライダー画像の動的生成
+            // 1. ヒーロースライダー画像の動的生成  
             const heroContainer = document.getElementById('hero-slider');
             let heroImageCount = 0;
             for (let i = 1; i <= MAX_HERO_IMAGES; i++) {
@@ -199,10 +208,11 @@
             const iframe = document.getElementById('map-frame');
             
             // パスからファイル名を抽出 (例: "Map/images/part2/satsuki_out.jpg" -> "satsuki_out.jpg")
-            const filename = panoPath.split('/').pop();
+            const normalized = String(panoPath || '').trim().replace(/\\/g, '/');
+            const mapRelative = normalized.startsWith('Map/') ? normalized.slice(4) : normalized;
             
             // iframeのsrcを設定してマップを開く（panoパラメータ付き）
-            iframe.src = `Map/index.html?pano=${filename}`;
+            iframe.src = `Map/index.html?pano=${encodeURIComponent(mapRelative)}`;
             
             overlay.style.opacity = '1';
             overlay.style.pointerEvents = 'auto';
