@@ -10,9 +10,9 @@
                 <h2 style="font-family: 'Cinzel', serif; font-size: 2.5rem; margin: 0 0 1rem 0; letter-spacing: 0.1em;">Reitaku Campus</h2>
                 <h3 style="font-size: 1.1rem; margin: 0 0 2rem 0; font-weight: normal; color: #555;">360°でキャンパスツアーをしてみよう！</h3>
                 <p style="font-size: 1rem; line-height: 2.2; margin: 0; color: #555;">
+                    このサイトはパノラマ機能（360°ビュー）や地図を活用して、麗澤大学のキャンパス内を体験できるように制作したものです。<br>
                     麗澤大学のキャンパスは、豊かな緑に囲まれ落ち着いた環境と、<br>
-                    学生の挑戦を支える充実した施設設備が特徴です。<br>
-                    このサイトはパノラマ機能（360°ビュー）や地図を活用して、麗澤大学のキャンパス内を体験できるように制作したものです。
+                    学生の挑戦を支える充実した施設設備が特徴です。
                 </p>
             `,
             
