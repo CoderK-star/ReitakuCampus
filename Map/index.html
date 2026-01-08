@@ -1160,9 +1160,9 @@
             width: 50px;
             height: 50px;
             border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            background: rgba(0, 0, 0, 0.45);
-            color: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.1); /* 枠線を薄く */
+            background: #ffffff; /* 背景白 */
+            color: #000000;      /* バツ黒 */
             font-size: 24px;
             font-weight: 700;
             line-height: 1;
@@ -1183,24 +1183,84 @@
 
         #streetview-exit-site-btn:hover,
         #streetview-exit-site-btn:focus-visible {
-            background: rgba(0, 0, 0, 0.62);
+            background: #f2f2f2;
         }
 
         /* Streetview minimap overlay */
         #streetview-minimap-wrap {
             position: absolute;
-            top: 2px;
-            left: 8px;
-            width: 340px;
-            max-width: 28vw;
+            top: 10px;
+            left: 10px;
+            width: 380px; /* デフォルトサイズ少し拡大 */
+            max-width: 35vw;
             border-radius: 14px;
-            background: transparent;
-            overflow: hidden;
+            background: transparent; /* 背景透明 */
+            backdrop-filter: blur(0); /* ぼかしも削除 */
+            overflow: visible; /* マーカーがはみ出ても良いように、あるいはデザイン次第ですが */
+             /* overflow: hidden だと画像に合わせた角丸になりますが、背景なしなら hidden のままでもOK */
+            overflow: hidden; 
             opacity: 1;
             display: none;
             pointer-events: auto;
             z-index: 1450;
-            transition: width 0.25s ease;
+            transition: all 0.25s ease;
+            box-shadow: none; /* 影も削除 */
+        }
+
+        /* トグルボタン */
+        #streetview-minimap-toggle {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.5); /* 背景白半透明 */
+            color: #000;      /* バツ黒 */
+            border: 1px solid rgba(0,0,0,0.1); /* 枠線を薄く */
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1500;
+            display: flex;
+            justify-content: center;    
+            align-items: center;
+            font-size: 18px;
+            line-height: 1;
+            transition: background 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
+        }
+        #streetview-minimap-toggle:hover {
+            background:rgba(255, 255, 255, 0.5);
+        }
+        #streetview-minimap-toggle::after {
+            content: "×";
+            padding-bottom: 2px;
+        }
+
+        /* 最小化状態 */
+        #streetview-minimap-wrap.minimized {
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            max-width: none;
+            overflow: hidden;
+        }
+        #streetview-minimap-wrap.minimized #streetview-minimap,
+        #streetview-minimap-wrap.minimized #streetview-minimap-markers {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #streetview-minimap-wrap.minimized #streetview-minimap-toggle {
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%;
+            border-radius: 0;
+            background: transparent;
+            border: none;
+            font-size: 24px;
+        }
+        #streetview-minimap-wrap.minimized #streetview-minimap-toggle::after {
+            content: "+";
+            padding-bottom: 0;
         }
 
         #streetview-minimap {
@@ -1296,6 +1356,20 @@
         }
 
         @media (max-width: 768px) {
+            /* Increase minimap size and prevent compression on mobile */
+            #streetview-minimap-wrap {
+                width: 260px; /* さらに大きく */
+                max-width: 65vw; /* 画面の65%まで */
+                top: 10px;
+                right: 10px; /* 右上に配置 */
+                left: auto;
+                display: none;
+                background: transparent;
+            }
+
+            /* ホバー時の拡大無効化（モバイルでは邪魔になるため）、またはwrap追従 */
+            #streetview-minimap-wrap:hover { width: 260px; } 
+
             body.street-mode #map {
                 width: min(33.6vw, 154px);
                 height: min(33.6vw, 154px);
@@ -1312,8 +1386,7 @@
             }
 
             #street-viewer .pnlm-compass {
-                top: 68px;
-                right: 14px;
+                display: none !important;
             }
 
             #streetview-topright-controls {
@@ -1323,8 +1396,9 @@
             }
 
             #streetview-exit-site-btn {
-                top: 14px;
-                right: 14px;
+                top: 62%;
+                left: 30px; /* 左上に移動 */
+                right: auto;
                 width: 42px;
                 height: 42px;
             }
@@ -1367,6 +1441,13 @@
                 window.location.href = '../index.html#rooms';
             }
         }
+
+        function toggleMinimap() {
+            const wrap = document.getElementById('streetview-minimap-wrap');
+            if(wrap) {
+                wrap.classList.toggle('minimized');
+            }
+        }
     </script>
     <!-- loading Animation -->
      <div class ="loading">
@@ -1400,6 +1481,7 @@
     <div id="street-viewer" aria-hidden="true">
         <button id="streetview-exit-site-btn" type="button" aria-label="サイトに戻る" title="サイトに戻る" onclick="goBackToSite()">×</button>
         <div id="streetview-minimap-wrap" aria-hidden="true">
+            <button id="streetview-minimap-toggle" type="button" aria-label="地図の表示切り替え" onclick="toggleMinimap()"></button>
             <img id="streetview-minimap" src="images/minimap/asunaro.png" alt="Minimap">
             <div id="streetview-minimap-markers"></div>
         </div>

@@ -237,6 +237,56 @@
             display: inline-block;
         }
 
+        /* スライダートグルボタン */
+        .slide-toggle-btn {
+            background: transparent;
+            border: 1px solid #ccc; 
+            color: #666;
+            padding: 0.4em 1.2em;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            letter-spacing: 0.1em;
+        }
+        .slide-toggle-btn:hover {
+            border-color: var(--text);
+            color: var(--text);
+        }
+        .slide-toggle-btn.active {
+            background: var(--text);
+            color: #fff;
+            border-color: var(--text);
+        }
+
+        /* スライダー矢印 */
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px; height: 60px;
+            background: transparent;
+            border: none;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 10;
+            transition: all 0.3s;
+            color: #555;
+            font-size: 3rem;
+            opacity: 0.5;
+        }
+        .slider-arrow:hover {
+            opacity: 1; color: #000;
+        }
+        .slider-arrow-left { left: -50px; }
+        .slider-arrow-right { right: -50px; }
+        
+        .slider-wrapper {
+            position: relative;
+            margin: 0 auto;
+            width: 100%;
+        }
+
         @media (max-width: 768px) {
             header { padding: 1.5rem; }
             .logo { font-size: 1.4rem; }
@@ -268,10 +318,15 @@
 
         <div class="rooms-header fade-in">
             <h2>Gallery</h2>
+            <button id="slider-toggle" class="slide-toggle-btn">AUTO PLAY: OFF</button>
         </div>
 
-        <section id="rooms" class="room-sec">
-        </section>
+        <div class="slider-wrapper">
+            <div id="arrow-left" class="slider-arrow slider-arrow-left">‹</div>
+            <section id="rooms" class="room-sec">
+            </section>
+            <div id="arrow-right" class="slider-arrow slider-arrow-right">›</div>
+        </div>
 
         <section id="map-section" class="fade-in" style="margin-top: 8rem; margin-bottom: 5rem;">
             <h2 style="font-family: 'Cinzel', serif; font-size: 2rem; margin-bottom: 2rem; letter-spacing: 0.1em;">Campus Map</h2>

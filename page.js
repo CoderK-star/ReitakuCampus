@@ -253,11 +253,51 @@
 
             // 変数設定
             const baseSpeed = 1; // 自動スクロールの基本速度
-            let velocity = baseSpeed; // 現在の速度
+            let isAutoScrolling = false; // デフォルトはOFF
+            let velocity = 0; // 現在の速度（開始時は0）
             let isDragging = false;
             let lastPageX = 0;
             let lastScrollPos = 0;
             let lastTime = 0;
+
+            // トグルボタンの設定
+            const toggleBtn = document.getElementById('slider-toggle');
+            function updateBtnState() {
+                if(!toggleBtn) return;
+                toggleBtn.textContent = isAutoScrolling ? "AUTO PLAY: ON" : "AUTO PLAY: OFF";
+                if(isAutoScrolling) {
+                    toggleBtn.classList.add('active');
+                } else {
+                    toggleBtn.classList.remove('active');
+                }
+            }
+            if (toggleBtn) {
+                updateBtnState();
+                toggleBtn.addEventListener('click', () => {
+                    isAutoScrolling = !isAutoScrolling;
+                    updateBtnState();
+                });
+            }
+
+            // 矢印ボタンの設定
+            const arrowLeft = document.getElementById('arrow-left');
+            const arrowRight = document.getElementById('arrow-right');
+            
+            // 矢印クリック時は、isDraggingをtrueにしたときと同様に一時的に加速させるなどの処理か、
+            // scrollPosを直接ずらすのが簡単。
+            // ただしスムーズに動かすためvelocityに干渉する
+            if (arrowLeft) {
+                arrowLeft.addEventListener('click', () => {
+                    // 左へスクロール＝velocityを正に
+                    velocity = 20; 
+                });
+            }
+            if (arrowRight) {
+                arrowRight.addEventListener('click', () => {
+                    // 右へスクロール＝velocityを負に
+                    velocity = -20;
+                });
+            }
             
             // 1セット分の幅を計算（アイテム幅 + マージン）
             // ※CSSで width: 300px, margin-right: 2rem (32px) としている前提
@@ -300,9 +340,10 @@
                     scrollPos += velocity * timeScale;
                     slider.scrollLeft = scrollPos;
                     
-                    // 摩擦処理：徐々に基本速度(baseSpeed)に戻す
-                    // 慣性スクロールが終わると自動スクロールに戻る動き
-                    velocity += (baseSpeed - velocity) * 0.05 * timeScale;
+                    // 摩擦処理：徐々に基本速度(baseSpeed)または0(停止)に戻す
+                    // 慣性スクロールが終わると設定された状態(自動/停止)に戻る
+                    const targetSpeed = isAutoScrolling ? baseSpeed : 0;
+                    velocity += (targetSpeed - velocity) * 0.05 * timeScale;
                 }
                 
                 // ループ処理：スクロール位置が範囲外に出たら巻き戻す
