@@ -110,6 +110,10 @@
             display: block;
             position: static;
             transform: none !important;
+            pointer-events: auto; /* クリック可能にする */
+            user-select: none; 
+            -webkit-user-drag: none; /* ドラッグ禁止 */
+            touch-action: pan-y; /* 横スクロールはJSで制御するが、縦スクロールは許可するかどうか */
         }
 
         /* Rooms header */

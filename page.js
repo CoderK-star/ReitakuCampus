@@ -179,7 +179,7 @@
                 return `
                     <div class="room-item fade-in">
                         <div class="r-img-wrap">
-                            <img src="${imgPath}" class="r-img" onclick="${clickAction}" style="cursor:pointer;">
+                            <img src="${imgPath}" class="r-img" onclick="${clickAction}" style="cursor:pointer;" draggable="false">
                         </div>
                         <div class="r-info">
                             <h2 class="r-name">${name}</h2>
