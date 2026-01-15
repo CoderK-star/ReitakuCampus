@@ -9,9 +9,8 @@ var dataObject = window.dataObject; // maintain legacy global var used by map.js
 
 (function fetchSheetData() {
     const sheetParam = encodeURIComponent(sheetName);
-    const cacheBuster = `&_=${Date.now()}`;
-    const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetParam}?key=${apiKey}${cacheBuster}`;
-    const gvizUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&sheet=${sheetParam}${cacheBuster}`;
+    const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetParam}?key=${apiKey}`;
+    const gvizUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&sheet=${sheetParam}`;
 
     const timeoutMs = 12000;
 
@@ -35,9 +34,35 @@ var dataObject = window.dataObject; // maintain legacy global var used by map.js
         });
     }
 
+    const CACHE_KEY = `reitaku:sheets:${spreadsheetId}:${sheetName}:v1`;
+    const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+    function readCache() {
+        try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            if (!parsed || typeof parsed !== 'object') return null;
+            if (!Array.isArray(parsed.data)) return null;
+            if (typeof parsed.savedAt !== 'number') return null;
+            const age = Date.now() - parsed.savedAt;
+            if (age < 0 || age > CACHE_TTL_MS) return null;
+            return parsed.data;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function writeCache(data) {
+        try {
+            if (!Array.isArray(data)) return;
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data }));
+        } catch (_) {}
+    }
+
     async function trySheetsAPI() {
         const controller = new AbortController();
-        const res = await withTimeout(fetch(sheetsUrl, { signal: controller.signal, cache: 'no-store' }), timeoutMs, controller);
+        const res = await withTimeout(fetch(sheetsUrl, { signal: controller.signal, cache: 'default' }), timeoutMs, controller);
         if (!res.ok) {
             const text = await res.text().catch(() => '');
             throw new Error(`Sheets API error ${res.status}: ${text.slice(0, 200)}`);
@@ -52,7 +77,7 @@ var dataObject = window.dataObject; // maintain legacy global var used by map.js
 
     async function tryGviz() {
         const controller = new AbortController();
-        const res = await withTimeout(fetch(gvizUrl, { signal: controller.signal, cache: 'no-store' }), timeoutMs, controller);
+        const res = await withTimeout(fetch(gvizUrl, { signal: controller.signal, cache: 'default' }), timeoutMs, controller);
         if (!res.ok) {
             const text = await res.text().catch(() => '');
             throw new Error(`GViz error ${res.status}: ${text.slice(0, 200)}`);
@@ -87,6 +112,19 @@ var dataObject = window.dataObject; // maintain legacy global var used by map.js
     }
 
     (async () => {
+        // Use cached normalized data immediately (perceived performance), then refresh when cache is stale.
+        const cached = readCache();
+        if (cached && cached.length) {
+            window.dataObject = cached; dataObject = window.dataObject;
+            console.info(`Loaded ${cached.length} rows from local cache.`);
+            try {
+                if (typeof window.initmap === 'function') {
+                    window.initmap();
+                }
+            } catch (_) {}
+            return;
+        }
+
         try {
             // First try official Sheets API (requires API key + public sheet or proper restrictions)
             const dataViaSheets = await trySheetsAPI();
@@ -215,6 +253,7 @@ var dataObject = window.dataObject; // maintain legacy global var used by map.js
             if (norm.length) {
                 window.dataObject = norm; dataObject = window.dataObject;
                 console.info(`Normalized ${norm.length} usable rows (from ${raw.length} raw). Sample:`, norm.slice(0,3));
+                writeCache(norm);
             } else {
                 console.warn('No usable rows after normalization. Check lat/lon headers and values. Raw sample:', raw.slice(0,3));
                 if (raw.length > 0) {

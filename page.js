@@ -45,36 +45,19 @@
 
         /* ===============動作ロジック）================== */
 
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('brand').textContent = config.name;
             document.getElementById('hero-title').textContent = config.hero.title;
             document.getElementById('hero-sub').textContent = config.hero.sub;
             document.getElementById('concept-text').innerHTML = config.concept;
 
-            // 1. ヒーロースライダー画像の動的生成  
+            // 1. ヒーロースライダー：最初の1枚は即表示、残りはアイドル時に追加（体感速度優先）
             const heroContainer = document.getElementById('hero-slider');
-            let heroImageCount = 0;
-            for (let i = 1; i <= MAX_HERO_IMAGES; i++) {
-                const exists = await checkAndRenderHeroImage(i, heroContainer);
-                if (exists) heroImageCount++;
-            }
-            if (heroImageCount > 0) {
-                heroContainer.querySelector('.slide').classList.add('active');
-            }
+            bootstrapHeroSlider(heroContainer);
 
-            // 2. 部屋画像の動的生成（高速化：並列処理に変更）
+            // 2. 部屋画像：存在チェックのための事前ロードをやめ、lazy-load + onerrorで欠損を除去
             const roomContainer = document.getElementById('rooms');
-            const roomPromises = [];
-            for (let i = 1; i <= MAX_ROOM_IMAGES; i++) {
-                roomPromises.push(checkAndGetRoomHtml(i));
-            }
-            // 全画像の判定を並行して行い、完了を待つ
-            const roomResults = await Promise.all(roomPromises);
-            
-            // 結果を順番に描画
-            roomResults.forEach(html => {
-                if(html) roomContainer.insertAdjacentHTML('beforeend', html);
-            });
+            renderRoomItems(roomContainer);
 
             // 無限スライダーの初期化
             initInfiniteSlider();
@@ -111,16 +94,8 @@
                 }
             });
 
-            // スライダーロジック
-            const slides = document.querySelectorAll('.slide');
-            if(slides.length > 1) {
-                let current = 0;
-                setInterval(() => {
-                    slides[current].classList.remove('active');
-                    current = (current + 1) % slides.length;
-                    slides[current].classList.add('active');
-                }, 3000);
-            }
+            // スライダーロジック（スライド追加にも追従）
+            startHeroAutoSlide(heroContainer);
 
             // Scroll Animation Observer
             const observer = new IntersectionObserver((entries) => {
@@ -134,61 +109,102 @@
             initParallax();
         });
 
-        // 画像存在チェック
+        // 画像存在チェック（hero追加用。roomはlazy + onerrorで処理）
         function imageExists(src) {
             return new Promise((resolve) => {
                 const img = new Image();
                 img.onload = () => resolve(true);
                 img.onerror = () => resolve(false);
+                img.decoding = 'async';
                 img.src = src;
             });
         }
 
-        // ヒーロー画像のレンダリング（既存維持）
-        async function checkAndRenderHeroImage(index, container) {
-            const imgPath = `image/main${index}.jpg`;
-            const exists = await imageExists(imgPath);
-            if (exists) {
-                const div = document.createElement('div');
-                div.className = 'slide';
-                div.style.backgroundImage = `url('${imgPath}')`;
-                container.insertBefore(div, container.querySelector('.hero-txt'));
-                return true;
-            }
-            return false;
+        function bootstrapHeroSlider(container) {
+            if (!container) return;
+            // まずmain1を表示（存在しない場合もレイアウトは維持される）
+            const firstPath = 'image/main1.jpg';
+            const first = document.createElement('div');
+            first.className = 'slide active';
+            first.style.backgroundImage = `url('${firstPath}')`;
+            container.insertBefore(first, container.querySelector('.hero-txt'));
+
+            // 残りはアイドル時間に追加（存在チェックしてから）
+            const schedule = (cb) => {
+                if (typeof window.requestIdleCallback === 'function') {
+                    window.requestIdleCallback(cb, { timeout: 1200 });
+                } else {
+                    setTimeout(cb, 0);
+                }
+            };
+
+            schedule(async () => {
+                const heroTxt = container.querySelector('.hero-txt');
+                const checks = [];
+                for (let i = 2; i <= MAX_HERO_IMAGES; i++) {
+                    const imgPath = `image/main${i}.jpg`;
+                    checks.push((async () => {
+                        const exists = await imageExists(imgPath);
+                        return exists ? imgPath : null;
+                    })());
+                }
+                const paths = await Promise.all(checks);
+                paths.filter(Boolean).forEach((imgPath) => {
+                    const div = document.createElement('div');
+                    div.className = 'slide';
+                    div.style.backgroundImage = `url('${imgPath}')`;
+                    container.insertBefore(div, heroTxt);
+                });
+            });
         }
 
-        // 部屋画像のHTML生成（HTML文字列を返すように変更）
-        async function checkAndGetRoomHtml(index) {
-            const imgPath = `image/model${index}.png`;
-            const exists = await imageExists(imgPath);
-            
-            if (exists) {
+        function startHeroAutoSlide(heroContainer) {
+            if (!heroContainer) return;
+            let current = 0;
+            setInterval(() => {
+                const slides = heroContainer.querySelectorAll('.slide');
+                if (!slides || slides.length <= 1) return;
+                if (current >= slides.length) current = 0;
+                slides[current].classList.remove('active');
+                current = (current + 1) % slides.length;
+                slides[current].classList.add('active');
+            }, 3000);
+        }
+
+        function renderRoomItems(roomContainer) {
+            if (!roomContainer) return;
+            const frag = document.createDocumentFragment();
+
+            const configuredCount = Array.isArray(config.textData) ? config.textData.length : 0;
+            const roomCount = configuredCount > 0 ? Math.min(MAX_ROOM_IMAGES, configuredCount) : MAX_ROOM_IMAGES;
+
+            for (let index = 1; index <= roomCount; index++) {
+                const imgPath = `image/model${index}.png`;
                 const dataIndex = index - 1;
                 const name = config.textData[dataIndex] ? config.textData[dataIndex].name : `Model ${index}`;
                 const desc = config.textData[dataIndex] ? config.textData[dataIndex].desc : `Campus view ${index}`;
                 const pano = config.textData[dataIndex] ? config.textData[dataIndex].pano : '';
-                
+
                 const safeName = name.replace(/'/g, "\\'");
                 const safeDesc = desc.replace(/'/g, "\\'").replace(/\n/g, "");
                 const safePano = pano ? pano.replace(/'/g, "\\'") : '';
-
-                // パノラマがある場合はopenPanorama、なければopenModal（または何もしない）
                 const clickAction = safePano ? `openPanorama('${safePano}')` : `openModal('${safeName}', '${safeDesc}', '${imgPath}')`;
 
-                return `
-                    <div class="room-item fade-in">
-                        <div class="r-img-wrap">
-                            <img src="${imgPath}" class="r-img" onclick="${clickAction}" style="cursor:pointer;" draggable="false">
-                        </div>
-                        <div class="r-info">
-                            <h2 class="r-name">${name}</h2>
-                            <a href="javascript:void(0)" class="btn view-btn" data-tooltip="360°ビューで見る" onclick="${clickAction}">VIEW</a>
-                        </div>
+                const wrapper = document.createElement('div');
+                wrapper.className = 'room-item fade-in';
+                wrapper.innerHTML = `
+                    <div class="r-img-wrap">
+                        <img src="${imgPath}" class="r-img" onclick="${clickAction}" style="cursor:pointer;" draggable="false" loading="lazy" decoding="async" onerror="this.closest('.room-item')?.remove();">
+                    </div>
+                    <div class="r-info">
+                        <h2 class="r-name">${name}</h2>
+                        <a href="javascript:void(0)" class="btn view-btn" data-tooltip="360°ビューで見る" onclick="${clickAction}">VIEW</a>
                     </div>
                 `;
+                frag.appendChild(wrapper);
             }
-            return null;
+
+            roomContainer.appendChild(frag);
         }
 
         // モーダル操作関数

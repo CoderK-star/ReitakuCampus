@@ -8,10 +8,10 @@
     
     <!-- MapLibre GL JS -->
     <link href="https://unpkg.com/maplibre-gl@5.14.0/dist/maplibre-gl.css" rel="stylesheet" />
-    <script src="https://unpkg.com/maplibre-gl@5.14.0/dist/maplibre-gl.js"></script>
+    <script defer src="https://unpkg.com/maplibre-gl@5.14.0/dist/maplibre-gl.js"></script>
     <!-- Pannellum for 360° street view -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
-    <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1523,11 +1523,12 @@
         <span class="streetview-anchor-label" aria-hidden="true">360°ビュー</span>
     </button>
 
-    <!-- Load data and initialize map -->
-    <script src="js/getdata.js"></script>
-    <script src="js/map.js"></script>
     <script>
         window.CUSTOM_STYLE_URL = 'https://api.maptiler.com/maps/streets-v4/style.json?key=z2iOmrIdt1L9Yw9QsXS3'
     </script>
+
+    <!-- Load scripts (deferred) -->
+    <script defer src="js/map.js"></script>
+    <script defer src="js/getdata.js"></script>
 </body>
 </html>
