@@ -117,6 +117,13 @@
             touch-action: pan-y; /* 横スクロールはJSで制御するが、縦スクロールは許可するかどうか */
         }
 
+        /* PCのみ: 画像クリックを無効化（VIEWボタンのみ反応） */
+        @media (pointer: fine) {
+            .r-img {
+                pointer-events: none;
+            }
+        }
+
         /* Rooms header */
         .rooms-header {
             display: flex;

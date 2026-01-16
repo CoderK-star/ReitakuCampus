@@ -1151,11 +1151,11 @@
         }
 
         #streetview-exit-site-btn {
-            position: absolute;
-            top: 20px;
+            position: fixed;
+            top: max(12px, env(safe-area-inset-top, 0px));
             right: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: none;
             z-index: 1600;
             width: 50px;
             height: 50px;
@@ -1188,9 +1188,9 @@
 
         /* Streetview minimap overlay */
         #streetview-minimap-wrap {
-            position: absolute;
-            top: 10px;
-            left: 10px;
+            position: fixed;
+            top: max(10px, env(safe-area-inset-top, 0px));
+            left: max(10px, env(safe-area-inset-left, 0px));
             width: 380px; /* デフォルトサイズ少し拡大 */
             max-width: 35vw;
             border-radius: 14px;
@@ -1360,8 +1360,8 @@
             #streetview-minimap-wrap {
                 width: 260px; /* さらに大きく */
                 max-width: 65vw; /* 画面の65%まで */
-                top: 10px;
-                right: 10px; /* 右上に配置 */
+                top: max(10px, env(safe-area-inset-top, 0px));
+                right: max(10px, env(safe-area-inset-right, 0px)); /* 右上に固定 */
                 left: auto;
                 display: none;
                 background: transparent;
@@ -1396,9 +1396,9 @@
             }
 
             #streetview-exit-site-btn {
-                top: 62%;
-                left: 30px; /* 左上に移動 */
-                right: auto;
+                top: max(10px, env(safe-area-inset-top, 0px));
+                right: max(50%, env(safe-area-inset-right, 10px));
+                left: 50%;
                 width: 42px;
                 height: 42px;
             }
