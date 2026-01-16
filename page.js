@@ -275,6 +275,9 @@
             let lastPageX = 0;
             let lastScrollPos = 0;
             let lastTime = 0;
+            let dragMoved = false;
+            let dragStartX = 0;
+            const isPointerCoarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
 
             // トグルボタンの設定
             const toggleBtn = document.getElementById('slider-toggle');
@@ -385,16 +388,24 @@
                 slider.classList.add('active');
                 lastPageX = e.pageX;
                 velocity = 0; // 掴んだ瞬間は速度リセット
+                dragMoved = false;
+                dragStartX = e.pageX;
             });
             
             slider.addEventListener('mouseleave', () => {
                 isDragging = false;
                 slider.classList.remove('active');
+                if (!isPointerCoarse) {
+                    dragMoved = false;
+                }
             });
             
             slider.addEventListener('mouseup', () => {
                 isDragging = false;
                 slider.classList.remove('active');
+                if (!isPointerCoarse) {
+                    dragMoved = false;
+                }
             });
             
             slider.addEventListener('mousemove', (e) => {
@@ -404,10 +415,23 @@
                 // マウスの移動量（delta）分だけスクロールさせる
                 const delta = e.pageX - lastPageX;
                 lastPageX = e.pageX;
+
+                if (!isPointerCoarse && Math.abs(e.pageX - dragStartX) > 5) {
+                    dragMoved = true;
+                }
                 
                 // ドラッグ方向とスクロール方向は逆（左にドラッグすると右にスクロール）
                 slider.scrollLeft -= delta; 
             });
+
+            // PCのみ: ドラッグ後のクリックを無効化（画像・VIEWリンクの誤発火防止）
+            slider.addEventListener('click', (e) => {
+                if (isPointerCoarse) return;
+                if (!dragMoved) return;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                dragMoved = false;
+            }, true);
 
             // タッチ操作イベント（スマホ対応）
             slider.addEventListener('touchstart', (e) => {
