@@ -23,7 +23,8 @@ def should_process(src: Path, dst: Path) -> bool:
 
 def resize_image(src: Path, dst: Path) -> None:
     with Image.open(src) as im:
-        im = im.convert("RGB")
+        # WebPの場合はRGBAを保持可能、JPEGの場合はRGB変換が必要
+        # サムネイルは軽量化優先のためWebPで保存
         width, height = im.size
         scale = min(MAX_WIDTH / width, MAX_HEIGHT / height, 1.0)
         if scale < 1.0:
@@ -32,7 +33,8 @@ def resize_image(src: Path, dst: Path) -> None:
         else:
             resized = im
         dst.parent.mkdir(parents=True, exist_ok=True)
-        resized.save(dst, format="JPEG", optimize=True, quality=JPEG_QUALITY)
+        # WebP形式で保存
+        resized.save(dst, format="WEBP", quality=JPEG_QUALITY)
 
 
 def process_directory(src_dir: Path) -> tuple[int, int]:
@@ -46,7 +48,9 @@ def process_directory(src_dir: Path) -> tuple[int, int]:
     for src in sorted(src_dir.iterdir()):
         if src.is_dir() or src.suffix.lower() not in SUPPORTED_EXTS:
             continue
-        dst = dst_dir / (src.stem + ".jpg")
+        
+        # WebPを優先的にサムネイル化
+        dst = dst_dir / (src.stem + ".webp")
         if not should_process(src, dst):
             skipped += 1
             continue

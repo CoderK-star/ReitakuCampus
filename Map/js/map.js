@@ -1339,12 +1339,28 @@ function resolveStreetImage(item) {
     const trimmed = String(raw).trim();
     if (!trimmed) return '';
     const normalized = trimmed.replace(/\\/g, '/');
-    if (/^https?:\/\//i.test(normalized)) return normalized;
-    if (normalized.startsWith('images/')) return normalized;
-    if (normalized.startsWith('part')) return `images/${normalized}`;
-    if (normalized.startsWith('/')) return normalized.slice(1);
-    if (normalized.includes('/')) return `images/${normalized}`;
-    return `images/part2/${normalized}`;
+
+    let finalPath = '';
+    if (/^https?:\/\//i.test(normalized)) {
+        finalPath = normalized;
+    } else if (normalized.startsWith('images/')) {
+        finalPath = normalized;
+    } else if (normalized.startsWith('part')) {
+        finalPath = `images/${normalized}`;
+    } else if (normalized.startsWith('/')) {
+        finalPath = normalized.slice(1);
+    } else if (normalized.includes('/')) {
+        finalPath = `images/${normalized}`;
+    } else {
+        finalPath = `images/part2/${normalized}`;
+    }
+
+    // WebP優先ロジック: モダンブラウザ向けに拡張子を強制的に .webp に置換
+    // これにより GitHub Pages での読み込み速度が劇的に向上します
+    if (finalPath.toLowerCase().endsWith('.jpg') || finalPath.toLowerCase().endsWith('.jpeg') || finalPath.toLowerCase().endsWith('.png')) {
+        return finalPath.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+    }
+    return finalPath;
 }
 
 function resolveStreetThumbnail(item) {
