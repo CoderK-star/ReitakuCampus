@@ -34,19 +34,42 @@ const CONFIG = {
 
 
 // Category definitions
-// 全種類の色を統一するためのテーマカラー
-const THEME_COLOR = "#2c2c2c"; 
+const CATEGORIES = {
+    "イベント": { color: "#e74c3c", label: "Events" },
+    "体験": { color: "#f1c40f", label: "Activities" },
+    "展示": { color: "#3498db", label: "Exhibitions" },
+    "食べ物": { color: "#ff9800", label: "Food" },
+    "場所": { color: "#43c59e", label: "Places" },
+    "交通": { color: "#9b59b6", label: "Transport" },
+    "ライブ": { color: "#e91e63", label: "Live Shows" }
+};
 
-const CATEGORIES = {};
-
-const DEFAULT_COLOR = THEME_COLOR;
+const DEFAULT_COLOR = "#43c59e";
 const MINIMAP_DEFAULT_ICON = 'images/minimap/asunaro.png';
 const STREET_CATEGORY_ORDER = ['satsuki', 'kaede', 'asunaro', 'hiiragi', 'graduate', 'outside', 'kenkyuutou', 'toshokan'];
-const MINIMAP_COLORS = {};
+const MINIMAP_COLORS = {
+    satsuki: '#2d9bf0',
+    kaede: '#34a853',
+    asunaro: '#fbbc04',
+    hiiragi: '#a142f4',
+    graduate: '#ff9800',
+    outside: '#e84545',
+    kenkyuutou: '#00acc1',
+    toshokan: '#6d4c41'
+};
 
 // Grouping for streetview location cards (carousel).
-// 空にすることで、サイドバーのカテゴリー別グループ表示を解除し、シンプルなリストにします。
-const STREETVIEW_CARD_GROUPS = {};
+// Add/remove keys here to control which categories get an outline + label.
+const STREETVIEW_CARD_GROUPS = {
+    satsuki: { label: 'さつき', color: MINIMAP_COLORS.satsuki },
+    kaede: { label: 'かえで', color: MINIMAP_COLORS.kaede },
+    asunaro: { label: 'あすなろ', color: MINIMAP_COLORS.asunaro },
+    hiiragi: { label: 'ひいらぎ', color: MINIMAP_COLORS.hiiragi },
+    graduate: { label: '大学院', color: MINIMAP_COLORS.graduate },
+    kenkyuutou: { label: '研究棟', color: MINIMAP_COLORS.kenkyuutou },
+    toshokan: { label: '図書館', color: MINIMAP_COLORS.toshokan },
+    outside: { label: '屋外', color: MINIMAP_COLORS.outside }
+};
 
 const DEFAULT_STANDARD_STYLE_URL = 'https://api.maptiler.com/maps/streets-v4/style.json?key=z2iOmrIdt1L9Yw9QsXS3';
 
@@ -984,7 +1007,7 @@ function getMinimapIconPath(category) {
 
 function getMinimapColor(category) {
     const slug = normalizeMinimapCategory(category);
-    return MINIMAP_COLORS[slug] || DEFAULT_COLOR;
+    return MINIMAP_COLORS[slug] || '#2d9bf0';
 }
 
 function isValidMinimapCoord(value) {
@@ -1570,11 +1593,11 @@ function updateStreetViewInfoPanel() {
     if (!current) {
         titleEl.textContent = 'スポット未選択';
         metaEl.textContent = '360°スポットを選択してください。';
-        catEl.style.display = 'none';
+        catEl.textContent = '';
     } else {
         titleEl.textContent = getStreetDisplayName(current);
         metaEl.textContent = getStreetMeta(current);
-        catEl.style.display = 'none';
+        catEl.textContent = (current.category || 'スポット');
     }
 
     carousel.innerHTML = '';
@@ -1590,7 +1613,7 @@ function updateStreetViewInfoPanel() {
         const group = document.createElement('div');
         group.className = 'streetview-card-group';
         group.dataset.group = groupKey;
-        const color = def.color || getMinimapColor(groupKey) || DEFAULT_COLOR;
+        const color = def.color || getMinimapColor(groupKey) || '#2d9bf0';
         group.style.setProperty('--group-color', color);
 
         const label = document.createElement('div');

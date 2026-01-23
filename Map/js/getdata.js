@@ -37,7 +37,7 @@
     }
 
     const CACHE_KEY = `reitaku:sheets:${spreadsheetId}:${sheetName}:v1`;
-    const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+    const CACHE_TTL_MS = 1 * 60 * 1000; // １分間超えたら更新
 
     function readCache() {
         try {

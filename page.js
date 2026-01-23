@@ -222,6 +222,14 @@
     document.getElementById('modal').classList.remove('active');
     }
 
+    // 制作者モーダル操作関数
+    function openCreatorModal() {
+    document.getElementById('creator-modal').classList.add('active');
+    }
+    function closeCreatorModal() {
+    document.getElementById('creator-modal').classList.remove('active');
+    }
+
     // パノラマビューワー操作関数（Iframe版）
     function openPanorama(panoPath) {
     const overlay = document.getElementById('map-overlay');
@@ -468,5 +476,7 @@
     // Global exports
     window.openModal = openModal;
     window.closeModal = closeModal;
+    window.openCreatorModal = openCreatorModal;
+    window.closeCreatorModal = closeCreatorModal;
     window.openPanorama = openPanorama;
 })();

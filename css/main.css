@@ -216,6 +216,38 @@ header {
 .bo-info p { margin: 0.8rem 0; font-size: 1rem; color: #ccc; }
 .bo-mail { color: #fff; text-decoration: none; border-bottom: 1px solid #555; padding-bottom: 2px; }
 
+.creator-btn {
+    background: transparent;
+    border: 1px solid #999;
+    color: #bbb;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 2rem;
+    font-family: 'Cinzel', serif;
+}
+.creator-btn:hover {
+    border-color: #fff;
+    color: #fff;
+}
+
+.creator-content {
+    max-width: 400px;
+    background: #1a1a1a;
+    color: #fff;
+}
+.creator-info {
+    padding: 1rem 0;
+    line-height: 2.5;
+    letter-spacing: 0.2em;
+    font-family: 'Shippori Mincho', serif;
+}
+.creator-title { font-size: 0.9rem; color: #888; margin: 0; }
+.creator-group { font-size: 1.1rem; color: var(--gold); margin: 0; }
+.creator-name { font-size: 1.2rem; margin: 0; }
+
 /* ブックバー（固定フッター） */
 .book-bar {
     position: fixed; bottom: 0; left: 0; width: 100%;

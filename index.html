@@ -55,6 +55,7 @@
         <div class="bo-info">
             <p>千葉県柏市光ケ丘２丁目１−１</p>
             <p><a href="https://www.reitaku-u.ac.jp/" class="bo-mail" target="_blank">www.reitaku-u.ac.jp</a></p>
+            <button class="creator-btn" onclick="openCreatorModal()">CREDITS</button>
         </div>
     </div>
 
@@ -71,6 +72,20 @@
         </div>
     </div>
 
+    <!-- Creator Modal -->
+    <div id="creator-modal" class="modal-overlay">
+        <div class="modal-content creator-content">
+            <div class="modal-close" onclick="closeCreatorModal()">×</div>
+            <div class="modal-body">
+                <div class="creator-info">
+                    <p class="creator-title">制作・構成</p>
+                    <p class="creator-group">河野洋ゼミ</p>
+                    <p class="creator-name">グエン トアンキエト</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Map Overlay (Iframe) -->
     <div id="map-overlay" style="position: fixed; inset: 0; z-index: 3000; background: #000; opacity: 0; pointer-events: none; transition: opacity 0.5s;">
         <iframe id="map-frame" style="width: 100%; height: 100%; border: none;" allow="fullscreen"></iframe>
@@ -79,6 +94,9 @@
     <div class="book-bar">
         <span class="bb-text">Reitaku</span>
         <div class="bb-box">University</div>
+    </div>
+    <div class="footer">
+        <p>&copy; 制作　河野洋ゼミ　グエントアンキエト</p>
     </div>
 </body>
 </html>
