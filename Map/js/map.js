@@ -1,4 +1,28 @@
+(() => {
+    "use strict";
+
 // map2.js - Clean implementation of Reitaku University Map
+
+window.CUSTOM_STYLE_URL = 'https://api.maptiler.com/maps/streets-v4/style.json?key=z2iOmrIdt1L9Yw9QsXS3';
+
+window.goBackToSite = function() {
+    try {
+        if (typeof exitStreetView === 'function') exitStreetView();
+    } catch (_) {}
+    if (window.parent !== window) {
+        window.parent.postMessage({ type: 'reitaku:closeMapOverlay', targetSectionId: 'rooms' }, '*');
+        window.parent.postMessage('closeMapOverlay', '*'); // backward compatible
+    } else {
+        window.location.href = '../index.html#rooms';
+    }
+};
+
+window.toggleMinimap = function() {
+    const wrap = document.getElementById('streetview-minimap-wrap');
+    if(wrap) {
+        wrap.classList.toggle('minimized');
+    }
+};
 
 // Configuration
 const CONFIG = {
@@ -9,43 +33,20 @@ const CONFIG = {
 };
 
 
-// Category configuration with colors
-const CATEGORIES = {
-    "イベント": { color: "#e74c3c", label: "Events" },
-    "体験": { color: "#f1c40f", label: "Activities" },
-    "展示": { color: "#3498db", label: "Exhibitions" },
-    "食べ物": { color: "#ff9800", label: "Food" },
-    "場所": { color: "#43c59e", label: "Places" },
-    "交通": { color: "#9b59b6", label: "Transport" },
-    "ライブ": { color: "#e91e63", label: "Live Shows" }
-};
+// Category definitions
+// 全種類の色を統一するためのテーマカラー
+const THEME_COLOR = "#2c2c2c"; 
 
-const DEFAULT_COLOR = "#43c59e";
+const CATEGORIES = {};
+
+const DEFAULT_COLOR = THEME_COLOR;
 const MINIMAP_DEFAULT_ICON = 'images/minimap/asunaro.png';
 const STREET_CATEGORY_ORDER = ['satsuki', 'kaede', 'asunaro', 'hiiragi', 'graduate', 'outside', 'kenkyuutou', 'toshokan'];
-const MINIMAP_COLORS = {
-    satsuki: '#2d9bf0',
-    kaede: '#34a853',
-    asunaro: '#fbbc04',
-    hiiragi: '#a142f4',
-    graduate: '#ff9800',
-    outside: '#e84545',
-    kenkyuutou: '#00acc1',
-    toshokan: '#6d4c41'
-};
+const MINIMAP_COLORS = {};
 
 // Grouping for streetview location cards (carousel).
-// Add/remove keys here to control which categories get an outline + label.
-const STREETVIEW_CARD_GROUPS = {
-    satsuki: { label: 'さつき', color: MINIMAP_COLORS.satsuki },
-    kaede: { label: 'かえで', color: MINIMAP_COLORS.kaede },
-    asunaro: { label: 'あすなろ', color: MINIMAP_COLORS.asunaro },
-    hiiragi: { label: 'ひいらぎ', color: MINIMAP_COLORS.hiiragi },
-    graduate: { label: '大学院', color: MINIMAP_COLORS.graduate },
-    kenkyuutou: { label: '研究棟', color: MINIMAP_COLORS.kenkyuutou },
-    toshokan: { label: '図書館', color: MINIMAP_COLORS.toshokan },
-    outside: { label: '屋外', color: MINIMAP_COLORS.outside }
-};
+// 空にすることで、サイドバーのカテゴリー別グループ表示を解除し、シンプルなリストにします。
+const STREETVIEW_CARD_GROUPS = {};
 
 const DEFAULT_STANDARD_STYLE_URL = 'https://api.maptiler.com/maps/streets-v4/style.json?key=z2iOmrIdt1L9Yw9QsXS3';
 
@@ -260,16 +261,6 @@ function renderMarkersAndPanel() {
         // Click handler: highlight with red ring, update panel, and (if possible) sync 360°ビュー
         el.addEventListener('click', () => {
             setSelectedMarker(el);
-            // If mobile and panel is closed, open to 30%
-            const isMobile = window.innerWidth <= 768;
-            if (isMobile) {
-                const panelEl = document.getElementById('side-panel');
-                if (panelEl && (panelEl.classList.contains('closed') || panelEl.offsetHeight <= 56)) {
-                    panelEl.classList.remove('closed');
-                    panelEl.classList.remove('expanded');
-                    panelEl.style.height = '30%';
-                }
-            }
 
             lastMarkerItems = items;
             map.flyTo({
@@ -993,7 +984,7 @@ function getMinimapIconPath(category) {
 
 function getMinimapColor(category) {
     const slug = normalizeMinimapCategory(category);
-    return MINIMAP_COLORS[slug] || '#2d9bf0';
+    return MINIMAP_COLORS[slug] || DEFAULT_COLOR;
 }
 
 function isValidMinimapCoord(value) {
@@ -1579,11 +1570,11 @@ function updateStreetViewInfoPanel() {
     if (!current) {
         titleEl.textContent = 'スポット未選択';
         metaEl.textContent = '360°スポットを選択してください。';
-        catEl.textContent = '';
+        catEl.style.display = 'none';
     } else {
         titleEl.textContent = getStreetDisplayName(current);
         metaEl.textContent = getStreetMeta(current);
-        catEl.textContent = (current.category || 'スポット');
+        catEl.style.display = 'none';
     }
 
     carousel.innerHTML = '';
@@ -1599,7 +1590,7 @@ function updateStreetViewInfoPanel() {
         const group = document.createElement('div');
         group.className = 'streetview-card-group';
         group.dataset.group = groupKey;
-        const color = def.color || getMinimapColor(groupKey) || '#2d9bf0';
+        const color = def.color || getMinimapColor(groupKey) || DEFAULT_COLOR;
         group.style.setProperty('--group-color', color);
 
         const label = document.createElement('div');
@@ -1944,3 +1935,5 @@ function hideStreetViewToast() {
 if (window.dataObject && window.dataObject.length > 0) {
     window.initmap();
 }
+
+})();

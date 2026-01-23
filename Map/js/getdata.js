@@ -1,13 +1,15 @@
-// Robustly fetch data from Google Sheets with fallback and clear errors
-const apiKey = 'AIzaSyAUi4KazffmDZV_dQUnMUKA1jJt4i0mqlU';
-const spreadsheetId = '19LosVkt3flvZfcL15k_DBLLrjOwiHWu9rYVE8ri7NQY';
-const sheetName = '360';
+(() => {
+    "use strict";
 
-// Expose globally so map.js can read it (both as window property and var)
-window.dataObject = window.dataObject || [];
-var dataObject = window.dataObject; // maintain legacy global var used by map.js
+    // Robustly fetch data from Google Sheets with fallback and clear errors
+    const apiKey = 'AIzaSyAUi4KazffmDZV_dQUnMUKA1jJt4i0mqlU';
+    const spreadsheetId = '19LosVkt3flvZfcL15k_DBLLrjOwiHWu9rYVE8ri7NQY';
+    const sheetName = '360';
 
-(function fetchSheetData() {
+    // Expose globally so map.js can read it (both as window property)
+    window.dataObject = window.dataObject || [];
+
+    (function fetchSheetData() {
     const sheetParam = encodeURIComponent(sheetName);
     const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetParam}?key=${apiKey}`;
     const gvizUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&sheet=${sheetParam}`;
@@ -251,7 +253,7 @@ var dataObject = window.dataObject; // maintain legacy global var used by map.js
                 });
             }
             if (norm.length) {
-                window.dataObject = norm; dataObject = window.dataObject;
+                window.dataObject = norm;
                 console.info(`Normalized ${norm.length} usable rows (from ${raw.length} raw). Sample:`, norm.slice(0,3));
                 writeCache(norm);
             } else {
@@ -276,4 +278,6 @@ var dataObject = window.dataObject; // maintain legacy global var used by map.js
             console.error('Error initializing map:', e);
         }
     })();
+})();
+
 })();
