@@ -1,0 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+
+# YOLO weights and large model files
+*.pt
+*.weights
+*.h5
+
+# Local environment variables
+.env
+.env.local
+.env.*.local
+
+# Generated thumbnails (uncomment if you want to ignore them)
+# **/thumbs/

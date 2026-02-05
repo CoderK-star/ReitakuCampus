@@ -39,8 +39,8 @@ def anonymize_image(image_path, model):
             slice_img = img[y:y2_slice, x:x2_slice]
             
             # AI検出 (Personのみ)
-            # タイル内での検出。confは低めに。
-            results = model.predict(slice_img, classes=[0], conf=0.10, imgsz=640, verbose=False)
+            # タイル内での検出。誤検知を抑えるためconfは高めに。
+            results = model.predict(slice_img, classes=[0], conf=0.25, imgsz=640, verbose=False)
             
             for r in results:
                 for box in r.boxes:
@@ -71,8 +71,8 @@ def main():
         print(f"Error: {IMAGES_DIR} not found.")
         return 1
 
-    # より高精度な Medium モデルを使用
-    model_name = 'yolov8m.pt'
+    # より高精度な X-Large モデルを使用
+    model_name = 'yolov8x.pt'
     print(f"Loading AI model ({model_name})...")
     try:
         model = YOLO(model_name)
