@@ -1,4 +1,4 @@
-<h1 align="center">🌳 Reitaku Campus~Tour~</h1>
+<h1 align="center">🌳 Reitaku Campus</h1>
 
 <div align="center">
     <img src="assets/main.png" alt="webimg" width="100%"/>
