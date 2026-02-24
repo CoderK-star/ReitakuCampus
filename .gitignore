@@ -32,5 +32,13 @@ Thumbs.db
 .env.local
 .env.*.local
 
+# API keys config
+Map/js/config.js
+
+# Manual documentation
+.manual.md
+
+
+
 # Generated thumbnails (uncomment if you want to ignore them)
 # **/thumbs/

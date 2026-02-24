@@ -3,7 +3,7 @@
 
 // map2.js - Clean implementation of Reitaku University Map
 
-window.CUSTOM_STYLE_URL = 'https://api.maptiler.com/maps/streets-v4/style.json?key=z2iOmrIdt1L9Yw9QsXS3';
+window.CUSTOM_STYLE_URL = `https://api.maptiler.com/maps/streets-v4/style.json?key=${window.API_KEYS.MAPTILER_KEY}`;
 
 window.goBackToSite = function() {
     try {
@@ -71,7 +71,7 @@ const STREETVIEW_CARD_GROUPS = {
     outside: { label: '屋外', color: MINIMAP_COLORS.outside }
 };
 
-const DEFAULT_STANDARD_STYLE_URL = 'https://api.maptiler.com/maps/streets-v4/style.json?key=z2iOmrIdt1L9Yw9QsXS3';
+const DEFAULT_STANDARD_STYLE_URL = `https://api.maptiler.com/maps/streets-v4/style.json?key=${window.API_KEYS.MAPTILER_KEY}`;
 
 const BASE_LAYERS = {
     standard: { label: '標準地図' },

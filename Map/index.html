@@ -21,8 +21,18 @@
     <!-- CSS -->
     <link rel="stylesheet" href="map_css/map.css">
     
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y4J0KEG3PF"></script>
+    <!-- API Keys (not tracked by git) -->
+    <script src="js/config.js"></script>
+
+    <!-- Google tag (gtag.js) - loaded dynamically from config -->
+    <script>
+        if (window.API_KEYS && window.API_KEYS.GTAG_ID) {
+            var s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.API_KEYS.GTAG_ID;
+            document.head.appendChild(s);
+        }
+    </script>
     <script defer src="js/gtag.js"></script>
 </head>
 <body>
