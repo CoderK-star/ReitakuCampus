@@ -5,7 +5,7 @@
 </div>
 
 <div align="center">
-    <img src="assets/sub1.png" alt="intro" width="51%"/>
+    <img src="assets/sub1.png" alt="intro" width="49%"/>
     <img src="assets/sub2.png" alt="gallery" width="49%"/>
 </div>
 
