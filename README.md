@@ -33,7 +33,7 @@
 
 ---
 
-Licence
+## Licence
 
 All Rights Reserved
 
