@@ -31,5 +31,11 @@
 
 ぜひ、使ってみてください！
 
+---
+
+Licence
+
+All Rights Reserved
+
  
 
