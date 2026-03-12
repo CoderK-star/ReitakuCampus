@@ -32,8 +32,6 @@ Thumbs.db
 .env.local
 .env.*.local
 
-# API keys config
-Map/js/config.js
 
 # Manual documentation
 manual.md
