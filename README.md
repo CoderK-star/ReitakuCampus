@@ -31,6 +31,11 @@
 
 ぜひ、使ってみてください！
 
-作者の励みになります！
+---
+
+## Licence
+
+All Rights Reserved
+
  
 
