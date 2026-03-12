@@ -2,7 +2,7 @@
     "use strict";
 
     // Robustly fetch data from Google Sheets with fallback and clear errors
-    const apiKey = 'AIzaSyAUi4KazffmDZV_dQUnMUKA1jJt4i0mqlU';
+    const apiKey = window.API_KEYS.GOOGLE_SHEETS_KEY;
     const spreadsheetId = '19LosVkt3flvZfcL15k_DBLLrjOwiHWu9rYVE8ri7NQY';
     const sheetName = '360';
 

@@ -1,53 +1,41 @@
-# 麗澤大学 キャンパスマップ 管理者ガイド 
+<h1 align="center">🌳 Reitaku Campus</h1>
 
-このウェブサイトの地図データやスポット情報を更新するためのマニュアルです。プログラミングの知識がなくても、Google スプレッドシートを編集するだけで地図を更新できます。
+<div align="center">
+    <img src="assets/main.png" alt="webimg" width="100%"/>
+</div>
 
----
+<div align="center">
+    <img src="assets/sub1.png" alt="intro" width="49%"/>
+    <img src="assets/sub2.png" alt="gallery" width="49%"/>
+</div>
 
-## 1. 地図データの更新方法 (Google スプレッドシート)
-
-地図に表示されるスポット情報は、以下の Google スプレッドシートで管理されています。
-
-**[管理用スプレッドシートを開く](https://docs.google.com/spreadsheets/d/19LosVkt3flvZfcL15k_DBLLrjOwiHWu9rYVE8ri7NQY/edit)**
-
-### スプレッドシートの各項目の説明
-
-| カラム名 (1行目) | 説明 | 例 |
-| :--- | :--- | :--- |
-| **title** | スポットの名前（地図やリストに表示されます） | あすなろ前 |
-| **category** | カテゴリー（下の「カテゴリー一覧」参照） | 場所 |
-| **lat** | 緯度（Google マップから取得可能） | 35.833707 |
-| **lon** | 経度（Google マップから取得可能） | 139.955303 |
-| **location** | 補足的な場所情報 | 麗澤大学内 |
-| **panorama** | 360度画像のファイルパス（`image/` フォルダ内など） | part1/scene1.jpg |
-| **thumbnail** | リストに表示する画像のパス（省略可） | part1/thumbs/scene1.jpg |
+<div align="center">
+    <img src="assets/sub3.png" alt="map" width="49%"/>
+    <img src="assets/sub4.png" alt="360view" width="49%"/>
+</div>
 
 ---
 
-## 2. メインサイトの編集 (page.js)
+# About
 
-トップページの文字や、ギャラリーに表示される建物情報は [page.js](page.js) で管理されています。
+## こんにちは！
 
-### 編集できる主な項目：
-- **name**: サイトの左上に表示される大学名
-- **hero**: トップに大きく表示される「タイトル」と「サブタイトル」
-- **concept**: スライダーの下に表示される「コンセプト文章」（HTMLタグが使えます）
-- **textData**: 下部のギャラリー（スライダー）に表示される建物の名前、説明、移動先の地図データ
+本サイト<a href="https://reitaku-campus.pages.dev/">麗澤Campus</a>はこのレポジトリをもとに作成されました。
+このサイトは2025年度、秋学期　工学部1年　初年次ゼミ　河野洋ゼミの活動の一環として制作されたものです。
 
----
+このサイトを作ったきっかけは、学外の学生さんや教育関係者などに少しでも麗澤大学の魅力を伝えたいと思ったためです！
+ 
+「麗澤のリアルな風景が知りたい！」「どんな雰囲気なんだろう？」
+という方のために
+*360°写真風*でいつ、どこでも”見る”ことができるサイトとなっています。
 
-## 3. 画像の管理
-
-画像は以下のルールで保存・管理されています。
-
-- **メインサイト用**: [image/](image/) フォルダ
-  - `main1.jpg`, `main2.jpg`... : トップのスライダー用
-  - `model1.png`, `model2.png`... : ギャラリー（部屋紹介）用
-- **マップ・360度ビュー用**: [Map/images/](Map/images/) フォルダ
-  - スプレッドシートの `panorama` 欄には、`part1/filename.jpg` のように入力します。
+ぜひ、使ってみてください！
 
 ---
 
-## 注意事項
-- スプレッドシートの1行目（ヘッダー）は編集しないでください。
-- 緯度(lat)・経度(lon)に誤りがあると、マーカーが正しい位置に表示されません。 Googleマップで地点を右クリックすると緯度経度をコピーできます。
+## Licence
+
+All Rights Reserved
+
+ 
+
