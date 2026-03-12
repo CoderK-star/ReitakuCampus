@@ -218,6 +218,7 @@ header {
 
 .creator-btn {
     background: transparent;
+    display: none; /*現在非表示*/
     border: 1px solid #999;
     color: #bbb;
     padding: 0.5rem 1.5rem;
