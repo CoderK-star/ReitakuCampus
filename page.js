@@ -11,9 +11,9 @@
 
     // 導入のコンセプト文章（<br>で改行できます）
     concept: `
-    <h2 style="font-family: 'Cinzel', serif; font-size: 2.5rem; margin: 0 0 1rem 0; letter-spacing: 0.1em;">Reitaku Campus</h2>
-    <h3 style="font-size: 1.1rem; margin: 0 0 2rem 0; font-weight: normal; color: #555;">360°でキャンパスツアーをしてみよう！</h3>
-    <p style="font-size: 1rem; line-height: 2.2; margin: 0; color: #555;">
+    <h2 class="concept-title">Reitaku Campus</h2>
+    <h3 class="concept-subtitle">360°でキャンパスツアーをしてみよう！</h3>
+    <p class="concept-desc">
     このサイトはパノラマ機能（360°ビュー）や地図を活用して、麗澤大学のキャンパス内を体験できるように制作したものです。<br>
     麗澤大学のキャンパスは、豊かな緑に囲まれ落ち着いた環境と、<br>
     学生の挑戦を支える充実した施設設備が特徴です。
@@ -467,7 +467,9 @@
     slider.classList.add('active');
     lastPageX = e.touches[0].pageX;
     velocity = 0;
-    }, { passive: false });
+    dragStartX = e.touches[0].pageX;
+    dragMoved = false;
+    }, { passive: true }); /* passive: trueに変更して縦スクロールをブロックしない */
 
     slider.addEventListener('touchend', () => {
     isDragging = false;
@@ -476,16 +478,20 @@
 
     slider.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
-    // スマホでのスワイプ操作と競合しないように preventDefault する
-    // ※縦スクロールもブロックされるため、操作感によっては調整が必要
-    e.preventDefault();
 
     const x = e.touches[0].pageX;
-    const delta = x - lastPageX;
-    lastPageX = x;
+    const deltaX = x - lastPageX;
+    const totalDeltaX = Math.abs(x - dragStartX);
+    
+    // 横方向の移動がある程度大きい場合のみスクロールを制御
+    // 縦スクロールは常に許可する
+    if (totalDeltaX > 10) {
+        dragMoved = true;
+    }
 
-    slider.scrollLeft -= delta;
-    }, { passive: false });
+    lastPageX = x;
+    slider.scrollLeft -= deltaX;
+    }, { passive: true }); /* passive: trueで縦スクロールを許可 */
     }
 
 

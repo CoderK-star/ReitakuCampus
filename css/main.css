@@ -41,14 +41,14 @@ header {
     text-align: center; color: #fff; z-index: 10; width: 100%;
 }
 .h-title { 
-    font-size: 7rem; font-family: 'BBH Bogle', 'sans-serif'; margin: 0; letter-spacing: 0.2em; font-weight: 400; 
+    font-size: clamp(2.2rem, 8vw, 7rem); font-family: 'BBH Bogle', 'sans-serif'; margin: 0; letter-spacing: 0.2em; font-weight: 400; 
     text-shadow: 0 5px 20px rgba(0,0,0,0.3);
     line-height: 1.2; 
 }
-.h-sub { font-size: 1rem; text-shadow: 0 5px 20px rgba(0,0,0,0.3); letter-spacing: 0.5em; display: block; }
+.h-sub { font-size: clamp(0.65rem, 1.5vw, 1rem); text-shadow: 0 5px 20px rgba(0,0,0,0.3); letter-spacing: 0.5em; display: block; }
 
 /* コンテンツ */
-.content { max-width: 1000px; margin: 0 auto; padding: 10rem 2rem 5rem; text-align: center; }
+.content { max-width: 1000px; margin: 0 auto; padding: 10rem 2rem 5rem; padding-bottom: calc(5rem + 60px); text-align: center; }
 
 /* コンセプトボックス */
 .concept-box {
@@ -56,10 +56,27 @@ header {
     padding: 3rem;        /* ★枠線と文字の間の余白（大きくすると枠が広がります） */
     margin: 0 auto 5rem;
     max-width: 800px;     /* ★枠の最大横幅（ここを600pxなどに変えると狭くなります） */
-    width: 50%;           /* スマホなどで画面端にくっつきすぎないようにする設定 */
+    width: clamp(85%, 50vw, 50%); /* モバイルでは85%、デスクトップでは50% */
     position: relative;
 }
 .lead-p { font-size: 1.5rem; line-height: 2.5; margin: 0; color: #555; }
+
+/* コンセプトテキスト */
+.concept-title {
+    font-family: 'Cinzel', serif; font-size: 2.5rem; margin: 0 0 1rem 0; letter-spacing: 0.1em;
+}
+.concept-subtitle {
+    font-size: 1.1rem; margin: 0 0 2rem 0; font-weight: normal; color: #555;
+}
+.concept-desc {
+    font-size: 1rem; line-height: 2.2; margin: 0; color: #555;
+}
+
+/* キャンパスマップセクション */
+.map-section { margin-top: 8rem; margin-bottom: 5rem; }
+.map-section-title { font-family: 'Cinzel', serif; font-size: 2rem; margin-bottom: 2rem; letter-spacing: 0.1em; }
+.map-embed-wrap { width: 100%; height: 500px; border: 1px solid #000; position: relative; }
+.map-embed-iframe { width: 100%; height: 100%; border: none; display: block; }
 
 /* モデル紹介（横スクロール） */
 .room-sec { 
@@ -329,19 +346,107 @@ header {
 .slider-arrow-left { left: -50px; }
 .slider-arrow-right { right: -50px; }
 
+/* フッター */
+.footer {
+    background: #333; color: #999; text-align: center;
+    padding: 1rem 1rem calc(1rem + 60px); /* book-barの分を考慮 */
+    font-size: 0.8rem; letter-spacing: 0.05em;
+}
+.footer p { margin: 0; }
+
 .slider-wrapper {
     position: relative;
     margin: 0 auto;
     width: 100%;
 }
 
+/* タブレット (769px〜1024px) */
+@media (max-width: 1024px) {
+    .slider-arrow { width: 44px; height: 44px; font-size: 2.2rem; }
+    .slider-arrow-left { left: -30px; }
+    .slider-arrow-right { right: -30px; }
+}
+
+/* モバイル (768px以下) */
 @media (max-width: 768px) {
-    header { padding: 1.5rem; }
-    .logo { font-size: 1.4rem; }
-    .h-title { font-size: 2.5rem; }
-    .h-sub { font-size: 0.7rem; }
-    .r-img-wrap { height: 50vh; }
-    .r-info { width: 85%; padding: 2rem; margin-top: -3rem; }
-    .modal-body { padding: 2rem; }
-    .modal-img { height: 40vh; }
+    header { padding: 1rem 1.2rem; }
+    .logo { font-size: 1.2rem; letter-spacing: 0.15em; }
+    .hero { height: 70vh; }
+    .content { padding: 5rem 1rem 3rem; padding-bottom: calc(3rem + 60px); }
+    .concept-box { padding: 1.5rem; width: 90%; }
+    .concept-box .lead-p { font-size: 1.1rem; line-height: 2; }
+    .concept-title { font-size: 1.6rem; }
+    .concept-subtitle { font-size: 0.95rem; margin-bottom: 1.2rem; }
+    .concept-desc { font-size: 0.9rem; line-height: 1.9; }
+    
+    /* ギャラリースライダー */
+    .room-item { min-width: 260px; width: 260px; margin-right: 1rem; }
+    .r-img-wrap { height: 180px; }
+    .r-info { padding: 0.8rem 0; }
+    .r-name { font-size: 1rem; }
+    .slider-wrapper { margin: 0 -1rem; padding: 0 1rem; overflow: hidden; }
+    .slider-arrow { display: none; } /* モバイルではスワイプで操作 */
+    .rooms-header h2 { font-size: 1.5rem; }
+    .slide-toggle-btn { font-size: 0.7rem; padding: 0.3em 1em; }
+    
+    /* モーダル */
+    .modal-content { width: 95%; max-height: 85vh; }
+    .modal-body { padding: 1.5rem; }
+    .modal-img { height: 30vh; object-fit: cover; }
+    .modal-title { font-size: 1.4rem; }
+    .modal-close { width: 44px; height: 44px; font-size: 1.4rem; } /* タッチターゲット拡大 */
+    
+    /* フッター領域 */
+    .business-overview { padding: 3rem 1.5rem; }
+    .bo-title { font-size: 1.2rem; }
+    .bo-info p { font-size: 0.9rem; }
+    .contact-btn { padding: 0.6rem 1.4rem; font-size: 0.8rem; }
+    
+    /* ブックバー */
+    .book-bar { padding: 0.7rem 0; }
+    .bb-text { font-size: 1rem; }
+    .bb-box { font-size: 0.85rem; padding: 0.4rem 0.8rem; }
+    
+    .footer { padding: 0.8rem 1rem calc(0.8rem + 50px); font-size: 0.7rem; }
+    
+    /* マップセクション */
+    .map-section { margin-top: 4rem; margin-bottom: 3rem; }
+    .map-section-title { font-size: 1.5rem; margin-bottom: 1.2rem; }
+    .map-embed-wrap { height: 350px; }
+}
+
+/* 小型モバイル (480px以下) */
+@media (max-width: 480px) {
+    header { padding: 0.8rem 1rem; }
+    .logo { font-size: 1rem; }
+    .hero { height: 60vh; }
+    .content { padding: 4rem 0.8rem 2rem; padding-bottom: calc(2rem + 60px); }
+    .concept-box { padding: 1.2rem; width: 95%; }
+    .concept-title { font-size: 1.4rem; }
+    .concept-subtitle { font-size: 0.85rem; }
+    .concept-desc { font-size: 0.85rem; line-height: 1.8; }
+    .room-item { min-width: 220px; width: 220px; }
+    .r-img-wrap { height: 150px; }
+    .modal-content { width: 98%; }
+    .modal-img { height: 25vh; }
+    .modal-body { padding: 1rem; }
+    .modal-title { font-size: 1.2rem; }
+    .business-overview { padding: 2rem 1rem; }
+    
+    /* マップセクション */
+    .map-section { margin-top: 3rem; margin-bottom: 2rem; }
+    .map-section-title { font-size: 1.3rem; }
+    .map-embed-wrap { height: 280px; }
+}
+
+/* safe-area-inset対応（ノッチ付き端末） */
+@supports (padding: env(safe-area-inset-top)) {
+    header {
+        padding-top: max(1rem, env(safe-area-inset-top));
+        padding-left: max(1.2rem, env(safe-area-inset-left));
+        padding-right: max(1.2rem, env(safe-area-inset-right));
+    }
+    .book-bar {
+        padding-bottom: max(0.7rem, env(safe-area-inset-bottom));
+    }
 }
