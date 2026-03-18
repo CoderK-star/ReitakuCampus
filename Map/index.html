@@ -6,6 +6,12 @@
     <link rel="icon" href="images/Reitaku.jpg">
     <title>Reitaku University Map</title>
     
+    <!-- Preconnect to external CDNs for faster resource loading -->
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <!-- MapLibre GL JS -->
     <link href="https://unpkg.com/maplibre-gl@5.14.0/dist/maplibre-gl.css" rel="stylesheet" />
     <script defer src="https://unpkg.com/maplibre-gl@5.14.0/dist/maplibre-gl.js"></script>
@@ -37,7 +43,7 @@
 </head>
 <body>
     <!-- loading Animation -->
-     <div class ="loading">
+     <div id="loading" class="loading">
             <p class="loading-text">Loading...</p>
         <div class="spinner-part"></div>
         <div class="spinner-part"></div>

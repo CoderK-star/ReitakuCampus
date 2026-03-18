@@ -124,14 +124,29 @@
     });
     }
 
+    // WebP 対応チェック（キャッシュ済み Promise）
+    const _supportsWebP = (function() {
+    if (typeof createImageBitmap !== 'undefined') {
+    return fetch('data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiTjt7REA').then(r=>r.blob()).then(b=>createImageBitmap(b)).then(()=>true,()=>false);
+    }
+    return Promise.resolve(false);
+    })();
+
+    async function heroImagePath(index) {
+    const webp = await _supportsWebP;
+    if (webp) return `image/main${index}.webp`;
+    return `image/main${index}.jpg`;
+    }
+
     function bootstrapHeroSlider(container) {
     if (!container) return;
-    // まずmain1を表示（存在しない場合もレイアウトは維持される）
-    const firstPath = 'image/main1.jpg';
+    // まずmain1を表示（WebP優先、フォールバックJPG）
+    heroImagePath(1).then(firstPath => {
     const first = document.createElement('div');
     first.className = 'slide active';
     first.style.backgroundImage = `url('${firstPath}')`;
     container.insertBefore(first, container.querySelector('.hero-txt'));
+    });
 
     // 残りはアイドル時間に追加（存在チェックしてから）
     const schedule = (cb) => {
@@ -146,8 +161,8 @@
     const heroTxt = container.querySelector('.hero-txt');
     const checks = [];
     for (let i = 2; i <= MAX_HERO_IMAGES; i++) {
-    const imgPath = `image/main${i}.jpg`;
     checks.push((async () => {
+    const imgPath = await heroImagePath(i);
     const exists = await imageExists(imgPath);
     return exists ? imgPath : null;
     })());
@@ -183,7 +198,8 @@
     const roomCount = configuredCount > 0 ? Math.min(MAX_ROOM_IMAGES, configuredCount) : MAX_ROOM_IMAGES;
 
     for (let index = 1; index <= roomCount; index++) {
-    const imgPath = `image/model${index}.png`;
+    const imgPath = `image/model${index}.webp`;
+    const imgFallback = `image/model${index}.png`;
     const dataIndex = index - 1;
     const name = config.textData[dataIndex] ? config.textData[dataIndex].name : `Model ${index}`;
     const desc = config.textData[dataIndex] ? config.textData[dataIndex].desc : `Campus view ${index}`;
@@ -198,7 +214,7 @@
     wrapper.className = 'room-item fade-in';
     wrapper.innerHTML = `
     <div class="r-img-wrap">
-    <img src="${imgPath}" class="r-img" onclick="${clickAction}" style="cursor:pointer;" draggable="false" loading="lazy" decoding="async" onerror="this.closest('.room-item')?.remove();">
+    <img src="${imgPath}" class="r-img" onclick="${clickAction}" style="cursor:pointer;" draggable="false" loading="lazy" decoding="async" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='${imgFallback}';}else{this.closest('.room-item')?.remove();}">
     </div>
     <div class="r-info">
     <h2 class="r-name">${name}</h2>

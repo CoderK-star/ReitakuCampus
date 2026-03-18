@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="index, follow">
     <title>ReitakuCampus</title>
-    <link rel="preload" as="image" href="image/main1.jpg" fetchpriority="high">
+    <link rel="preload" as="image" href="image/main1.webp" type="image/webp" fetchpriority="high">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="css/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=BBH+Bogle&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Shippori+Mincho:wght@400;500&family=BIZ+UDPGothic&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=BBH+Bogle&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=BBH+Bogle&display=swap" rel="stylesheet"></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Shippori+Mincho:wght@400;500&family=BIZ+UDPGothic&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Shippori+Mincho:wght@400;500&family=BIZ+UDPGothic&display=swap" rel="stylesheet"></noscript>
     <script src="page.js" defer></script>
 </head>
 <body>
@@ -45,7 +47,7 @@
         <section id="map-section" class="fade-in" style="margin-top: 8rem; margin-bottom: 5rem;">
             <h2 style="font-family: 'Cinzel', serif; font-size: 2rem; margin-bottom: 2rem; letter-spacing: 0.1em;">Campus Map</h2>
             <div style="width: 100%; height: 500px; border: 1px solid #000; position: relative;">
-                <iframe src="./Map/index.html" style="width: 100%; height: 100%; border: none; display: block;"></iframe>
+                <iframe src="./Map/index.html" loading="lazy" style="width: 100%; height: 100%; border: none; display: block;"></iframe>
             </div>
         </section>
     </div>
@@ -55,6 +57,8 @@
         <div class="bo-info">
             <p>千葉県柏市光ケ丘２丁目１−１</p>
             <p><a href="https://www.reitaku-u.ac.jp/" class="bo-mail" target="_blank">www.reitaku-u.ac.jp</a></p>
+            
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSedCrUznIi4aDdJ509BLOCES5V9BwxZWvt_NqnkE-ZtYsWywQ/viewform?usp=dialog" class="contact-btn" target="_blank" rel="noopener noreferrer" aria-label="お問い合わせフォームを開く">お問い合わせ</a>
             <button class="creator-btn" onclick="openCreatorModal()">CREDITS</button> 
         </div>
     </div>
