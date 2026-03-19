@@ -492,10 +492,7 @@ body.street-mode #streetview-anchor-btn {
     }
 
     #streetview-anchor-btn {
-        top: 60%;
-        bottom: auto;
-        left: 16px;
-        margin-top: -31px; /* center the 62px button vertically */
+        display: none;
     }
 
 }
