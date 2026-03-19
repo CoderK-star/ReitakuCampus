@@ -51,8 +51,6 @@
 
     document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('brand').textContent = config.name;
-    document.getElementById('hero-title').textContent = config.hero.title;
-    document.getElementById('hero-sub').textContent = config.hero.sub;
     document.getElementById('concept-text').innerHTML = config.concept;
 
     // 1. ヒーロースライダー：最初の1枚は即表示、残りはアイドル時に追加（体感速度優先）
@@ -124,31 +122,13 @@
     });
     }
 
-    // WebP 対応チェック（キャッシュ済み Promise）
-    const _supportsWebP = (function() {
-    if (typeof createImageBitmap !== 'undefined') {
-    return fetch('data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiTjt7REA').then(r=>r.blob()).then(b=>createImageBitmap(b)).then(()=>true,()=>false);
-    }
-    return Promise.resolve(false);
-    })();
-
-    async function heroImagePath(index) {
-    const webp = await _supportsWebP;
-    if (webp) return `image/main${index}.webp`;
-    return `image/main${index}.jpg`;
+    function heroImagePath(index) {
+    return Promise.resolve(`image/main${index}.webp`);
     }
 
     function bootstrapHeroSlider(container) {
     if (!container) return;
-    // まずmain1を表示（WebP優先、フォールバックJPG）
-    heroImagePath(1).then(firstPath => {
-    const first = document.createElement('div');
-    first.className = 'slide active';
-    first.style.backgroundImage = `url('${firstPath}')`;
-    container.insertBefore(first, container.querySelector('.hero-txt'));
-    });
-
-    // 残りはアイドル時間に追加（存在チェックしてから）
+    // main1はHTMLに直置き。残りはアイドル時間に追加（存在チェックしてから）
     const schedule = (cb) => {
     if (typeof window.requestIdleCallback === 'function') {
     window.requestIdleCallback(cb, { timeout: 1200 });
