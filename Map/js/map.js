@@ -125,7 +125,7 @@ window.initmap = function() {
     if (panoTarget) {
         const targetItem = allData.find(item => {
             const img = resolveStreetImage(item);
-            return img && img.includes(panoTarget);
+            return isSamePanoImage(img, panoTarget);
         });
         
         if (targetItem) {
@@ -292,12 +292,12 @@ function renderMarkersAndPanel() {
                 duration: 1000
             });
 
-            // ミニマップのマーカークリック時に360°ビューをその場所へ切り替える
+            // マーカー1クリックで360°ビューへ遷移
             const streetItems = items.filter(hasStreetView);
             if (streetItems.length) {
                 setStreetviewAnchorThumbnail(streetItems[0]);
-                // Keep context ready but do not auto-start 360° on marker click
-                streetViewState.contextItems = items.filter(hasStreetView);
+                enterStreetView(streetItems[0], streetItems);
+                return;
             }
 
             showStreetViewPopup([lon, lat], items);
@@ -1332,6 +1332,42 @@ function hasStreetView(item) {
     return Boolean(resolveStreetImage(item));
 }
 
+function normalizePanoPath(path) {
+    if (!path) return '';
+    const normalized = String(path).trim().replace(/\\/g, '/').replace(/^\/+/, '');
+    return normalized.startsWith('Map/') ? normalized.slice(4) : normalized;
+}
+
+function stripFileExtension(path) {
+    return String(path || '').replace(/\.[^./?#]+(?=($|[?#]))/i, '');
+}
+
+function getPathBasename(path) {
+    const normalized = normalizePanoPath(path);
+    if (!normalized) return '';
+    const clean = normalized.split('?')[0].split('#')[0];
+    const segments = clean.split('/');
+    return segments[segments.length - 1] || '';
+}
+
+function isSamePanoImage(left, right) {
+    const normalizedLeft = normalizePanoPath(left);
+    const normalizedRight = normalizePanoPath(right);
+    if (!normalizedLeft || !normalizedRight) return false;
+
+    const leftLower = normalizedLeft.toLowerCase();
+    const rightLower = normalizedRight.toLowerCase();
+    if (leftLower === rightLower) return true;
+
+    const leftNoExt = stripFileExtension(leftLower);
+    const rightNoExt = stripFileExtension(rightLower);
+    if (leftNoExt === rightNoExt) return true;
+
+    const leftBaseNoExt = stripFileExtension(getPathBasename(leftLower));
+    const rightBaseNoExt = stripFileExtension(getPathBasename(rightLower));
+    return Boolean(leftBaseNoExt && rightBaseNoExt && leftBaseNoExt === rightBaseNoExt);
+}
+
 function resolveStreetImage(item) {
     if (!item) return '';
     const raw = item.streetViewImage || item.streetviewImage || item.streetview || item.panorama || '';
@@ -1396,6 +1432,11 @@ function enterStreetView(item, contextItems) {
     if (!item) return;
     const panorama = resolveStreetImage(item);
 
+    if (!panorama) {
+        showError('この場所には360°画像が登録されていません。');
+        return;
+    }
+
     // Check if we need to open in parent overlay (Embedded mode)
     const isEmbedded = window.self !== window.top;
     const isOverlay = new URLSearchParams(window.location.search).has('pano');
@@ -1406,11 +1447,6 @@ function enterStreetView(item, contextItems) {
             type: 'reitaku:openMapOverlay',
             pano: panorama
         }, '*');
-        return;
-    }
-
-    if (!panorama) {
-        showError('この場所には360°画像が登録されていません。');
         return;
     }
 
