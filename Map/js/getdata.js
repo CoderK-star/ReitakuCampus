@@ -3,7 +3,7 @@
 
     // Robustly fetch data from Google Sheets with fallback and clear errors
     const apiKey = window.API_KEYS.GOOGLE_SHEETS_KEY;
-    const spreadsheetId = '19LosVkt3flvZfcL15k_DBLLrjOwiHWu9rYVE8ri7NQY';
+    const spreadsheetId = '1Kk_uFFoJlPAs_KspSuz2G4owzJo1rcCtVUEhe-gvPeo';
     const sheetName = '360';
 
     // Expose globally so map.js can read it (both as window property)
